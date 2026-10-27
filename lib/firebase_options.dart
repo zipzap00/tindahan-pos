@@ -56,13 +56,14 @@ class DefaultFirebaseOptions {
     projectId: 'tindahan-pos-b57e2',
     storageBucket: 'tindahan-pos-b57e2.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyC91RsMVRMXPyxMfSKInSCwhXj04Zw-7cw',
     appId: '1:823655763242:ios:d1b68211609a2e5a77a253',
     messagingSenderId: '823655763242',
     projectId: 'tindahan-pos-b57e2',
     storageBucket: 'tindahan-pos-b57e2.firebasestorage.app',
+    androidClientId: '823655763242-on4mogvld6ke5pqnrpe5vqn0fd4us0mk.apps.googleusercontent.com',
+    iosClientId: '823655763242-pmgj97qsh51doas1rvd9h5a19una1hi4.apps.googleusercontent.com',
     iosBundleId: 'ph.tindahan.tindahanPos',
   );
 }

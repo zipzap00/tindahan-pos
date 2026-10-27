@@ -76,6 +76,8 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: AppSpace.md),
+                    const GoogleSignInButton(variant: PillVariant.outlineOnDark),
+                    const SizedBox(height: AppSpace.md),
                     Center(
                       child: TextButton(
                         onPressed: () => Navigator.of(context).push(
@@ -103,6 +105,43 @@ class WelcomeScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// "Continue with Google": signs in or signs up in one step. A new account
+/// goes on to create-store like an email sign-up does.
+class GoogleSignInButton extends StatefulWidget {
+  const GoogleSignInButton({super.key, required this.variant});
+
+  final PillVariant variant;
+
+  @override
+  State<GoogleSignInButton> createState() => _GoogleSignInButtonState();
+}
+
+class _GoogleSignInButtonState extends State<GoogleSignInButton> {
+  bool _busy = false;
+
+  Future<void> _signIn() async {
+    final s = context.s;
+    setState(() => _busy = true);
+    final result = await AppServices.of(context).authRepository.signInWithGoogle();
+    if (!mounted) return;
+    setState(() => _busy = false);
+    final error = result.errorOrNull;
+    if (error != null) showMessage(context, describeError(s, error));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PillButton(
+      label: context.s.continueWithGoogle,
+      variant: widget.variant,
+      icon: Icons.account_circle_outlined,
+      loading: _busy,
+      expand: true,
+      onPressed: _signIn,
     );
   }
 }
@@ -211,6 +250,8 @@ class _SignInScreenState extends State<SignInScreen> {
                       variant: PillVariant.ghost,
                       onPressed: _busy ? null : _resetPassword,
                     ),
+                    const SizedBox(height: AppSpace.lg),
+                    const GoogleSignInButton(variant: PillVariant.outline),
                   ],
                 ),
               ),

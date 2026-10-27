@@ -81,6 +81,7 @@ abstract class Strings {
   String get costModeTotal;
   String get costOfGoodsSold;
   String get costPerPiece;
+  String get continueWithGoogle;
   String get costPerPieceHelper;
   String get costPerPieceLabel;
   String get createAccount;

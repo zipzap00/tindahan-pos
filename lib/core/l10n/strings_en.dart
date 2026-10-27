@@ -216,6 +216,9 @@ class EnStrings extends Strings {
   String get costPerPiece => 'Cost per piece';
 
   @override
+  String get continueWithGoogle => 'Continue with Google';
+
+  @override
   String get costPerPieceHelper => 'What you paid for one piece.';
 
   @override

@@ -85,6 +85,7 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 - Taglish is the default language.
 - Export is CSV with UTF-8 BOM (opens in Excel) rather than native `.xlsx`.
 - Cashiers created through a secondary FirebaseApp so the owner stays signed in.
+- Google sign-in uses `FirebaseAuth.signInWithProvider(GoogleAuthProvider())` (Firebase's browser flow), not the `google_sign_in` package: no new dependency. Needs the Google provider on in the console, the Android SHA-1/SHA-256 registered (debug key done; add the release key before publishing) and the iOS encoded-App-ID URL scheme in `Info.plist` (done). Cashiers still sign in with the email and password the owner set.
 - Replaced the `flutter create` template `widget_test.dart` with `test/app_smoke_test.dart`, which boots `TindahanApp` with a start-up error (no Firebase needed).
 - Android `minSdk` left at `flutter.minSdkVersion` (the Flutter 3.44 default already meets firebase_auth's 23). App label is "Tindahan" on Android and iOS.
 

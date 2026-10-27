@@ -66,5 +66,18 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Google sign-in (Firebase signInWithProvider) returns to the app through
+	     this scheme: the iOS Firebase App ID with ":" replaced by "-". -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>app-1-823655763242-ios-d1b68211609a2e5a77a253</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

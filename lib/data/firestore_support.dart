@@ -71,7 +71,7 @@ Future<Result<bool>> commitBatch(WriteBatch batch, String context) async {
 AppError mapError(Object error, String context) {
   if (error is FirebaseAuthException) {
     final code = switch (error.code) {
-      'email-already-in-use' => AppErrorCode.emailInUse,
+      'email-already-in-use' || 'account-exists-with-different-credential' => AppErrorCode.emailInUse,
       'invalid-credential' ||
       'wrong-password' ||
       'user-not-found' ||

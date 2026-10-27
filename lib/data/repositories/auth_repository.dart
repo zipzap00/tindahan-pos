@@ -25,6 +25,32 @@ class AuthRepository {
     }
   }
 
+  /// Google sign-in through Firebase's own browser flow (no extra package).
+  /// Works for new and returning owners: a new login has no store yet, so the
+  /// session moves to `NeedsStore` and the app shows create-store.
+  /// Returns `Ok(false)` when the user closes the Google page.
+  Future<Result<bool>> signInWithGoogle() async {
+    const context = '[auth/signInWithGoogle]';
+    try {
+      await auth.signInWithProvider(GoogleAuthProvider());
+      return const Ok(true);
+    } on FirebaseAuthException catch (error, stack) {
+      if (_cancelCodes.contains(error.code)) return const Ok(false);
+      logError(context, error, stack);
+      return Err(mapError(error, context));
+    } catch (error, stack) {
+      logError(context, error, stack);
+      return Err(mapError(error, context));
+    }
+  }
+
+  static const Set<String> _cancelCodes = {
+    'web-context-canceled',
+    'web-context-cancelled',
+    'canceled',
+    'popup-closed-by-user',
+  };
+
   /// Step 1 of owner sign-up: the login itself.
   Future<Result<bool>> createAccount({required String email, required String password}) async {
     const context = '[auth/createAccount]';

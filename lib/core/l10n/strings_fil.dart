@@ -216,6 +216,9 @@ class FilStrings extends Strings {
   String get costPerPiece => 'Puhunan bawat piraso';
 
   @override
+  String get continueWithGoogle => 'Magpatuloy gamit ang Google';
+
+  @override
   String get costPerPieceHelper => 'Magkano ang bili mo sa isang piraso.';
 
   @override
