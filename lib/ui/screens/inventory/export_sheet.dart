@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/l10n/language.dart';
@@ -37,13 +36,15 @@ class _ExportSheetState extends State<_ExportSheet> {
     final s = context.s;
     final stamp = ManilaTime.dayKey(ManilaTime.now());
     try {
-      final directory = await getTemporaryDirectory();
-      final file = File('${directory.path}/$filePrefix-$stamp.csv');
-      await file.writeAsBytes(utf8.encode('$utf8Bom$csv'), flush: true);
+      // In-memory file: share_plus writes it to a temp file on phones and
+      // downloads it in the browser.
+      final name = '$filePrefix-$stamp.csv';
+      final bytes = Uint8List.fromList(utf8.encode('$utf8Bom$csv'));
       await SharePlus.instance.share(
         ShareParams(
-          files: [XFile(file.path, mimeType: 'text/csv')],
-          subject: '$filePrefix-$stamp.csv',
+          files: [XFile.fromData(bytes, mimeType: 'text/csv', name: name)],
+          fileNameOverrides: [name],
+          subject: name,
         ),
       );
     } catch (error, stack) {

@@ -17,8 +17,7 @@ dependencies:
   firebase_auth: ^6.0.0
   # Language preference before sign-in.
   shared_preferences: ^2.3.0
-  # CSV export: write to a temp file, then open the share sheet.
-  path_provider: ^2.1.5
+  # CSV export: open the share sheet (download in the browser).
   share_plus: ^11.0.0
 
 dev_dependencies:

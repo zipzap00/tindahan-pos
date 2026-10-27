@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../../core/log.dart';
 import '../../core/result.dart';
@@ -32,7 +33,12 @@ class AuthRepository {
   Future<Result<bool>> signInWithGoogle() async {
     const context = '[auth/signInWithGoogle]';
     try {
-      await auth.signInWithProvider(GoogleAuthProvider());
+      // The browser has no signInWithProvider; it uses a popup instead.
+      if (kIsWeb) {
+        await auth.signInWithPopup(GoogleAuthProvider());
+      } else {
+        await auth.signInWithProvider(GoogleAuthProvider());
+      }
       return const Ok(true);
     } on FirebaseAuthException catch (error, stack) {
       if (_cancelCodes.contains(error.code)) return const Ok(false);
