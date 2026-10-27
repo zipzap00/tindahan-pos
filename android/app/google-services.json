@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "823655763242",
+    "project_id": "tindahan-pos-b57e2",
+    "storage_bucket": "tindahan-pos-b57e2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823655763242:android:7a9a1429aa03eab577a253",
+        "android_client_info": {
+          "package_name": "ph.tindahan.tindahan_pos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRFns0UgvPX6TZ0vm-ehQK7L7Bb5iJRqk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

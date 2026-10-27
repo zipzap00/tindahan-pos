@@ -1,0 +1,38 @@
+name: tindahan_pos
+description: Sari-sari store POS, inventory, sales and utang tracker (Flutter + Firebase).
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.7.0
+  flutter: ">=3.29.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Firebase is the backend: Auth for sign-in, Cloud Firestore for data and
+  # offline cache, security rules for access control.
+  firebase_core: ^4.0.0
+  cloud_firestore: ^6.0.0
+  firebase_auth: ^6.0.0
+  # Language preference before sign-in.
+  shared_preferences: ^2.3.0
+  # CSV export: write to a temp file, then open the share sheet.
+  path_provider: ^2.1.5
+  share_plus: ^11.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  fonts:
+    # Inter 4.1 variable font (SIL OFL, see assets/fonts/Inter-LICENSE.txt).
+    # Body roles use the text optical size; display roles use opsz 32
+    # ("Inter Display"), the open substitute DESIGN.md names for
+    # Neue Haas Grotesk Display.
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/InterVariable.ttf

@@ -1,0 +1,149 @@
+rules_version = '2';
+
+// Tindahan POS security rules.
+//
+// Everything a store owns lives under stores/{storeId}. A member document
+// stores/{storeId}/members/{uid} says who belongs to the store, their role
+// (owner or cashier) and whether their access is on.
+//
+// The most important rule: no write may leave a product's stock below zero.
+// Sales use FieldValue.increment, and rules see the value after the
+// increment, so two phones selling the last piece at the same time cannot
+// both succeed.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function memberPath(storeId) {
+      return /databases/$(database)/documents/stores/$(storeId)/members/$(request.auth.uid);
+    }
+
+    function isMember(storeId) {
+      return signedIn()
+        && exists(memberPath(storeId))
+        && get(memberPath(storeId)).data.active == true;
+    }
+
+    function isOwner(storeId) {
+      return isMember(storeId) && get(memberPath(storeId)).data.role == 'owner';
+    }
+
+    function storeAfter(storeId) {
+      return getAfter(/databases/$(database)/documents/stores/$(storeId));
+    }
+
+    function changedOnly(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    // ── User profile: which store a login belongs to ──────────────────────
+    match /users/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && (
+        // Owner sign-up: the store is created in the same batch.
+        (request.auth.uid == uid
+          && request.resource.data.role == 'owner'
+          && storeAfter(request.resource.data.storeId).data.ownerUid == uid)
+        // Owner adding a cashier.
+        || (isOwner(request.resource.data.storeId) && request.resource.data.role == 'cashier')
+      );
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.storeId == resource.data.storeId
+        && request.resource.data.role == resource.data.role;
+      allow delete: if false;
+    }
+
+    match /stores/{storeId} {
+      allow read: if isMember(storeId);
+      allow create: if signedIn() && request.resource.data.ownerUid == request.auth.uid;
+      allow update: if isOwner(storeId) && request.resource.data.ownerUid == resource.data.ownerUid;
+      allow delete: if false;
+
+      match /members/{uid} {
+        // A disabled member may still read their own document, so the app
+        // can tell them their access is off.
+        allow read: if isMember(storeId) || (signedIn() && request.auth.uid == uid);
+        allow create: if signedIn() && (
+          (uid == request.auth.uid
+            && request.resource.data.role == 'owner'
+            && storeAfter(storeId).data.ownerUid == request.auth.uid)
+          || (isOwner(storeId) && request.resource.data.role == 'cashier')
+        );
+        // Owners manage cashiers; nobody can change their own role or access.
+        allow update: if isOwner(storeId)
+          && uid != request.auth.uid
+          && request.resource.data.role == 'cashier';
+        allow delete: if false;
+      }
+
+      match /products/{productId} {
+        allow read: if isMember(storeId);
+        allow create: if isOwner(storeId) && request.resource.data.stock >= 0;
+        allow update: if request.resource.data.stock >= 0 && (
+          isOwner(storeId)
+          // Cashiers may only take stock out through a sale.
+          || (isMember(storeId)
+              && changedOnly(['stock', 'soldQty', 'revenue', 'cogs', 'updatedAt'])
+              && request.resource.data.stock < resource.data.stock)
+        );
+        allow delete: if false;
+      }
+
+      match /sales/{saleId} {
+        allow read: if isMember(storeId);
+        allow create: if isMember(storeId)
+          && request.resource.data.cashierUid == request.auth.uid
+          && request.resource.data.status == 'completed';
+        // Refunds and cancellations are owner-only.
+        allow update: if isOwner(storeId);
+        allow delete: if false;
+      }
+
+      match /refunds/{refundId} {
+        allow read: if isMember(storeId);
+        allow create: if isOwner(storeId);
+        allow update, delete: if false;
+      }
+
+      match /stockMovements/{movementId} {
+        allow read: if isMember(storeId);
+        allow create: if isOwner(storeId)
+          || (isMember(storeId) && request.resource.data.type == 'sale');
+        allow update, delete: if false;
+      }
+
+      match /dailyStats/{dayKey} {
+        allow read: if isMember(storeId);
+        // Written as increments in the same batch as sales and payments.
+        allow create, update: if isMember(storeId);
+        allow delete: if false;
+      }
+
+      match /customers/{customerId} {
+        allow read: if isMember(storeId);
+        allow create, update: if isMember(storeId);
+        allow delete: if false;
+
+        match /ledger/{entryId} {
+          allow read: if isMember(storeId);
+          allow create: if isMember(storeId);
+          allow update, delete: if false;
+        }
+      }
+
+      match /expenses/{expenseId} {
+        allow read, create, delete: if isOwner(storeId);
+        allow update: if false;
+      }
+
+      match /auditLogs/{entryId} {
+        allow read: if isOwner(storeId);
+        allow create: if isMember(storeId);
+        allow update, delete: if false;
+      }
+    }
+  }
+}
