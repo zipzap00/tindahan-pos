@@ -4,16 +4,35 @@ import '../../../core/l10n/language.dart';
 import '../../../core/result.dart';
 import '../../../core/theme/tokens.dart';
 import '../../scopes.dart';
+import '../../widgets/brand.dart';
 import '../../widgets/layout.dart';
 import '../../widgets/pill_button.dart';
 import '../../widgets/states.dart';
 
+/// Start-up loading screen: logo, spinner and "Opening the store…", on the
+/// same cream canvas as the rest of the app.
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: CenteredLoader(message: context.s.openingStore));
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpace.xl),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const AppLogo(height: 48),
+                const SizedBox(height: AppSpace.xxl),
+                CenteredLoader(message: context.s.openingStore),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

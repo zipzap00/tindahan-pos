@@ -1,6 +1,6 @@
 # UI Mapping: DESIGN.md → Flutter
 
-`DESIGN.md` describes two tracks. The app uses the **light transactional track** (cream canvas, aloe and pistachio greens, black pills, Inter) on every screen except **Welcome**, which uses the **cinematic black canvas**. No property below is invented; each comes from `DESIGN.md`.
+`DESIGN.md` describes two tracks. The app uses the **light transactional track** (cream canvas, aloe and pistachio greens, black pills, Inter) on every screen, including **Welcome** (the owner chose this over DESIGN.md's cinematic black welcome on 2026-11-03). The logo (`assets/images/logo.png`, shown by `AppLogo`) is recoloured to ink and aloe. Apart from that choice, no property below is invented; each comes from `DESIGN.md`.
 
 ## Colours (`AppColors`)
 

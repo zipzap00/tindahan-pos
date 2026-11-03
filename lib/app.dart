@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -114,8 +116,35 @@ class _SessionScopeHostState extends State<_SessionScopeHost> {
   }
 }
 
-class AuthGate extends StatelessWidget {
+/// Picks the home screen from the session state. At start-up the branded
+/// splash stays for at least [minSplash] so it reads as a loading page rather
+/// than a flicker, then fades to the next screen.
+class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
+
+  static const Duration minSplash = Duration(milliseconds: 1500);
+
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<AuthGate> {
+  Timer? _splashTimer;
+  bool _splashDone = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _splashTimer = Timer(AuthGate.minSplash, () {
+      if (mounted) setState(() => _splashDone = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _splashTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,14 +152,18 @@ class AuthGate extends StatelessWidget {
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) {
-        return switch (controller.state) {
-          SessionLoading() => const SplashScreen(),
-          SignedOut() => const WelcomeScreen(),
-          NeedsStore(:final user) => CreateStoreScreen(user: user),
-          AccessDisabled() => const AccessDisabledScreen(),
-          SessionFailed(:final error) => SessionErrorScreen(error: error),
-          SessionReady(:final session) => HomeShell(key: ObjectKey(session), isOwner: session.isOwner),
-        };
+        final state = controller.state;
+        final Widget screen = !_splashDone
+            ? const SplashScreen()
+            : switch (state) {
+                SessionLoading() => const SplashScreen(),
+                SignedOut() => const WelcomeScreen(),
+                NeedsStore(:final user) => CreateStoreScreen(user: user),
+                AccessDisabled() => const AccessDisabledScreen(),
+                SessionFailed(:final error) => SessionErrorScreen(error: error),
+                SessionReady(:final session) => HomeShell(key: ObjectKey(session), isOwner: session.isOwner),
+              };
+        return AnimatedSwitcher(duration: const Duration(milliseconds: 300), child: screen);
       },
     );
   }

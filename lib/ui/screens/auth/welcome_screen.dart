@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import '../../../core/l10n/language.dart';
 import '../../../core/theme/tokens.dart';
 import '../../scopes.dart';
+import '../../widgets/brand.dart';
 import '../../widgets/dialogs.dart';
 import '../../widgets/inputs.dart';
 import '../../widgets/layout.dart';
 import '../../widgets/pill_button.dart';
 import '../../widgets/states.dart';
 
-/// The one cinematic (night canvas) screen: black, thin display type, a
-/// white-stroked pill. Everything after it is the light transactional track.
+/// First screen when signed out. Same cream canvas as the rest of the app
+/// (owner's choice, replacing DESIGN.md's black cinematic welcome), with the
+/// logo top-left.
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -20,7 +22,6 @@ class WelcomeScreen extends StatelessWidget {
     final language = LanguageScope.of(context);
     final isEnglish = language.language == AppLanguage.en;
     return Scaffold(
-      backgroundColor: AppColors.canvasNight,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(
@@ -34,23 +35,20 @@ class WelcomeScreen extends StatelessWidget {
                     const SizedBox(height: AppSpace.lg),
                     Row(
                       children: [
-                        Expanded(
-                          child: Text(
-                            s.appName,
-                            style: AppType.headingMd.copyWith(color: AppColors.onDark),
-                          ),
+                        const Expanded(
+                          child: Align(alignment: Alignment.centerLeft, child: AppLogo(height: 32)),
                         ),
                         TextButton(
                           onPressed: () => language.setLanguage(isEnglish ? AppLanguage.fil : AppLanguage.en),
                           style: TextButton.styleFrom(
-                            foregroundColor: AppColors.onDark,
+                            foregroundColor: AppColors.ink,
                             minimumSize: const Size(48, AppSpace.minTouch),
-                            shape: const StadiumBorder(side: BorderSide(color: AppColors.onDark)),
+                            shape: const StadiumBorder(side: BorderSide(color: AppColors.ink)),
                             padding: const EdgeInsets.symmetric(horizontal: AppSpace.lg),
                           ),
                           child: Text(
                             isEnglish ? 'Filipino' : 'English',
-                            style: AppType.caption.copyWith(color: AppColors.onDark),
+                            style: AppType.caption.copyWith(color: AppColors.ink),
                           ),
                         ),
                       ],
@@ -59,24 +57,23 @@ class WelcomeScreen extends StatelessWidget {
                     const SizedBox(height: AppSpace.huge),
                     Text(
                       s.welcomeEyebrow.toUpperCase(),
-                      style: AppType.eyebrowCap.copyWith(color: AppColors.linkCool1),
+                      style: AppType.eyebrowCap.copyWith(color: AppColors.textSecondary),
                     ),
                     const SizedBox(height: AppSpace.lg),
-                    Text(s.welcomeHeadline, style: AppType.displayHero),
+                    Text(s.welcomeHeadline, style: AppType.displayHero.copyWith(color: AppColors.ink)),
                     const SizedBox(height: AppSpace.xl),
-                    Text(s.welcomeLead, style: AppType.bodyLg.copyWith(color: AppColors.linkCool3)),
+                    Text(s.welcomeLead, style: AppType.bodyLg.copyWith(color: AppColors.textSecondary)),
                     const Spacer(),
                     const SizedBox(height: AppSpace.huge),
                     PillButton(
                       label: s.createStoreAccount,
-                      variant: PillVariant.outlineOnDark,
                       expand: true,
                       onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(builder: (_) => const SignUpScreen()),
                       ),
                     ),
                     const SizedBox(height: AppSpace.md),
-                    const GoogleSignInButton(variant: PillVariant.outlineOnDark),
+                    const GoogleSignInButton(variant: PillVariant.outline),
                     const SizedBox(height: AppSpace.md),
                     Center(
                       child: TextButton(
@@ -84,15 +81,15 @@ class WelcomeScreen extends StatelessWidget {
                           MaterialPageRoute<void>(builder: (_) => const SignInScreen()),
                         ),
                         style: TextButton.styleFrom(
-                          foregroundColor: AppColors.onDark,
+                          foregroundColor: AppColors.ink,
                           minimumSize: const Size(48, AppSpace.minTouch),
                         ),
                         child: Text(
                           s.haveAccountSignIn,
                           style: AppType.bodyMd.copyWith(
-                            color: AppColors.onDark,
+                            color: AppColors.ink,
                             decoration: TextDecoration.underline,
-                            decorationColor: AppColors.onDark,
+                            decorationColor: AppColors.ink,
                           ),
                         ),
                       ),

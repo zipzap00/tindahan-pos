@@ -82,6 +82,7 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 - Refund and cancel adjust the **original sale day's** stats, so past days stay correct.
 - Dashboard reads aggregated `dailyStats`, not raw sales.
 - No red or amber anywhere: DESIGN.md has none. Status uses icon + word.
+- Branding (2026-11-03, owner's request): the Welcome screen uses the cream canvas like every other screen instead of DESIGN.md's black cinematic welcome. The owner's logo (`photo/logo.png`, navy/red/yellow) was recoloured to ink + aloe with a transparent background as `assets/images/logo.png` and shown top-left on Welcome via `AppLogo`. Start-up shows a branded loading screen (logo, spinner, "Opening the store…") for at least 1.5 s (`AuthGate.minSplash`), then fades to the next screen. Android launch background and web page background are cream to avoid a white flash.
 - English is the default language (changed 2026-11-03, was Taglish); Filipino (Taglish) stays selectable under More → Language and on the welcome screen. A saved choice of Filipino is kept.
 - Export is CSV with UTF-8 BOM (opens in Excel) rather than native `.xlsx`.
 - Cashiers created through a secondary FirebaseApp so the owner stays signed in.

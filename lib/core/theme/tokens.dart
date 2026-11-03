@@ -1,5 +1,5 @@
 // Design tokens. Every value comes from DESIGN.md (transactional light track
-// for the app, cinematic night track for the welcome screen). Widgets never
+// on every screen; the night tokens remain for reference). Widgets never
 // use raw colours, sizes or radii; they read these constants.
 
 import 'package:flutter/painting.dart';
@@ -130,7 +130,7 @@ abstract final class AppType {
   }
 
   /// Mobile step of display-xxl (DESIGN.md: "drops to ~56–64px"): the
-  /// cinematic welcome headline only.
+  /// welcome headline only (pass an ink colour on the light canvas).
   static final TextStyle displayHero =
       _style(size: 56, weight: 330, height: 1.0, display: true, color: AppColors.onDark);
 
@@ -162,4 +162,12 @@ abstract final class AppType {
   /// Same style with tabular figures, so changing amounts do not jump.
   static TextStyle tabular(TextStyle style) =>
       style.copyWith(fontFeatures: const [FontFeature('ss03'), FontFeature('tnum')]);
+}
+
+/// Bundled images.
+abstract final class AppAssets {
+  /// Store-front mark and "TINDAHAN" word, recoloured to the palette (ink and
+  /// aloe) on a transparent background. Width is 4.46 × height.
+  static const String logo = 'assets/images/logo.png';
+  static const double logoAspectRatio = 1203 / 270;
 }
