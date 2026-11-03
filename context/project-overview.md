@@ -4,7 +4,7 @@
 
 Tindahan POS is a mobile app for a Filipino sari-sari store. It replaces the notebook, the calculator and the utang list with one phone: sell from a POS, keep stock counts right, see what the store earned today, and know who owes what. It is built with Flutter on the front and Firebase (Auth, Firestore, security rules) as the back end.
 
-Currency is the Philippine peso (₱). All dates and times are Philippine time (Asia/Manila). The app defaults to Taglish and can switch to English from **Iba pa → Wika**.
+Currency is the Philippine peso (₱). All dates and times are Philippine time (Asia/Manila). The app defaults to English and can switch to Filipino (Taglish) from **More → Language** (**Iba pa → Wika**).
 
 ## The Problem It Solves
 

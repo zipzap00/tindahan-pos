@@ -6,8 +6,8 @@ import 'strings.dart';
 import 'strings_en.dart';
 import 'strings_fil.dart';
 
-/// Filipino (Taglish) is the default; English is a full alternative.
-enum AppLanguage { fil, en }
+/// English is the default; Filipino (Taglish) is a full alternative.
+enum AppLanguage { en, fil }
 
 class LanguageController extends ChangeNotifier {
   LanguageController(this._language);
@@ -23,10 +23,11 @@ class LanguageController extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final saved = prefs.getString(_prefsKey);
-      return LanguageController(saved == 'en' ? AppLanguage.en : AppLanguage.fil);
+      // Only an explicit earlier choice of Filipino overrides the default.
+      return LanguageController(saved == 'fil' ? AppLanguage.fil : AppLanguage.en);
     } catch (error, stack) {
       logError('[l10n/load]', error, stack);
-      return LanguageController(AppLanguage.fil);
+      return LanguageController(AppLanguage.en);
     }
   }
 

@@ -21,6 +21,59 @@ class EnStrings extends Strings {
   String get aboutTitle => 'About';
 
   @override
+  String get accountCaption => 'Who is signed in, and change password';
+
+  @override
+  String get accountChangePassword => 'Change password';
+
+  @override
+  String get accountCurrentPassword => 'Current password';
+
+  @override
+  String get accountCurrentPasswordWrong => 'Your current password is wrong.';
+
+  @override
+  String get accountGooglePasswordNote =>
+      'You sign in with Google, so this account has no password in the app. To change it, change your Google account password.';
+
+  @override
+  String get accountName => 'Name';
+
+  @override
+  String get accountNewPassword => 'New password';
+
+  @override
+  String get accountPasswordChanged => 'Password changed. Use the new one next time you sign in.';
+
+  @override
+  String get accountPasswordNotShown =>
+      'For your safety, no one can see your password, not even the app. If you forgot it, send a reset email.';
+
+  @override
+  String get accountPasswordTitle => 'Password';
+
+  @override
+  String get accountRole => 'Role';
+
+  @override
+  String get accountSamePassword => 'The new password must be different from the current one.';
+
+  @override
+  String get accountSignInGoogle => 'Google';
+
+  @override
+  String get accountSignInMethod => 'Signed in with';
+
+  @override
+  String get accountSignInPassword => 'Email and password';
+
+  @override
+  String get accountStore => 'Store';
+
+  @override
+  String get accountTitle => 'My account';
+
+  @override
   String get accessDisabledBody => 'The store owner turned off this account\'s access. Ask the owner to turn it back on.';
 
   @override

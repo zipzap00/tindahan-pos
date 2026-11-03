@@ -12,6 +12,7 @@ import '../../widgets/pill_button.dart';
 import '../expenses/expenses_screen.dart';
 import '../inventory/movements_screen.dart';
 import '../sales/sales_history_screen.dart';
+import 'account_screen.dart';
 import 'audit_screen.dart';
 import 'staff_screen.dart';
 
@@ -63,6 +64,13 @@ class MoreScreen extends StatelessWidget {
                   children: [
                     ListCard(
                       children: [
+                        ListRow(
+                          leading: const Icon(Icons.manage_accounts_outlined),
+                          title: s.accountTitle,
+                          subtitle: member.email.isEmpty ? s.accountCaption : member.email,
+                          trailing: const Icon(Icons.chevron_right_rounded),
+                          onTap: () => _push(context, const AccountScreen()),
+                        ),
                         ListRow(
                           leading: const Icon(Icons.receipt_long_outlined),
                           title: s.salesHistoryTitle,

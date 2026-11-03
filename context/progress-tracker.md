@@ -82,11 +82,12 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 - Refund and cancel adjust the **original sale day's** stats, so past days stay correct.
 - Dashboard reads aggregated `dailyStats`, not raw sales.
 - No red or amber anywhere: DESIGN.md has none. Status uses icon + word.
-- Taglish is the default language.
+- English is the default language (changed 2026-11-03, was Taglish); Filipino (Taglish) stays selectable under More → Language and on the welcome screen. A saved choice of Filipino is kept.
 - Export is CSV with UTF-8 BOM (opens in Excel) rather than native `.xlsx`.
 - Cashiers created through a secondary FirebaseApp so the owner stays signed in.
 - Google sign-in uses `FirebaseAuth.signInWithProvider(GoogleAuthProvider())` (Firebase's browser flow), not the `google_sign_in` package: no new dependency. Needs the Google provider on in the console, the Android SHA-1/SHA-256 registered (debug key done; add the release key before publishing) and the iOS encoded-App-ID URL scheme in `Info.plist` (done). Cashiers still sign in with the email and password the owner set.
 - Web added for testing in Chrome (`flutter run -d chrome`): Firebase web app registered, Google sign-in uses `signInWithPopup` on web, CSV export shares in-memory data (`XFile.fromData`) so it works on phones and downloads in the browser; `path_provider` removed.
+- **Iba pa → Aking account** (owners and cashiers): name, email, sign-in method (Google / email and password), role, store. Email-and-password logins can change their password after re-entering the current one (`reauthenticateWithCredential` then `updatePassword`), or send a reset email. Google-only logins see a note that their password is managed by Google. Passwords are never shown: Firebase keeps only a one-way hash.
 - Replaced the `flutter create` template `widget_test.dart` with `test/app_smoke_test.dart`, which boots `TindahanApp` with a start-up error (no Firebase needed).
 - Android `minSdk` left at `flutter.minSdkVersion` (the Flutter 3.44 default already meets firebase_auth's 23). App label is "Tindahan" on Android and iOS.
 

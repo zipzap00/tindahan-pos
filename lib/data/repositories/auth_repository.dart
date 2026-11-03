@@ -113,5 +113,37 @@ class AuthRepository {
     }
   }
 
+  /// The signed-in login, for the account screen.
+  User? get currentUser => auth.currentUser;
+
+  /// True when the login has an email-and-password sign-in (a Google-only
+  /// login has no password to change).
+  static bool hasPassword(User user) =>
+      user.providerData.any((info) => info.providerId == EmailAuthProvider.PROVIDER_ID);
+
+  static bool hasGoogle(User user) =>
+      user.providerData.any((info) => info.providerId == GoogleAuthProvider.PROVIDER_ID);
+
+  /// Checks the current password first (Firebase also needs a recent
+  /// sign-in to change it), then sets the new one.
+  Future<Result<bool>> changePassword({required String currentPassword, required String newPassword}) async {
+    const context = '[auth/changePassword]';
+    final user = auth.currentUser;
+    final email = user?.email;
+    if (user == null || email == null) {
+      return const Err(AppError(AppErrorCode.permissionDenied, context: context));
+    }
+    try {
+      await user.reauthenticateWithCredential(
+        EmailAuthProvider.credential(email: email, password: currentPassword),
+      );
+      await user.updatePassword(newPassword);
+      return const Ok(true);
+    } catch (error, stack) {
+      logError(context, error, stack);
+      return Err(mapError(error, context));
+    }
+  }
+
   Future<void> signOut() => auth.signOut();
 }

@@ -51,7 +51,7 @@ When two files disagree: `DESIGN.md` wins on visual properties, `firestore.rules
 ### UI
 - Use the tokens in `lib/core/theme/tokens.dart` and the shared widgets in `lib/ui/widgets/`. Never hard-code a colour, radius, font size or shadow in a screen.
 - `DESIGN.md` has no red or amber. Status is shown with an icon **and** a word, on aloe, shade or ink pills.
-- Every user-facing string goes in the translation generator (`Strings`, `FilStrings`, `EnStrings`) and is read with `context.s`. Taglish is the default.
+- Every user-facing string goes in the translation generator (`Strings`, `FilStrings`, `EnStrings`) and is read with `context.s`. English is the default; Taglish (Filipino) is the alternative.
 - Every screen handles loading, empty and error states with the widgets in `states.dart`.
 - Touch targets are at least 48 px (`AppSpace.minTouch`).
 

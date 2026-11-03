@@ -10,12 +10,29 @@ import '../../domain/inventory.dart';
 import '../result.dart';
 
 
-/// Every user-facing string. Filipino (Taglish) is the default.
+/// Every user-facing string. English is the default; Filipino (Taglish) is the alternative.
 abstract class Strings {
   const Strings();
 
   String get aboutBody;
   String get aboutTitle;
+  String get accountCaption;
+  String get accountChangePassword;
+  String get accountCurrentPassword;
+  String get accountCurrentPasswordWrong;
+  String get accountGooglePasswordNote;
+  String get accountName;
+  String get accountNewPassword;
+  String get accountPasswordChanged;
+  String get accountPasswordNotShown;
+  String get accountPasswordTitle;
+  String get accountRole;
+  String get accountSamePassword;
+  String get accountSignInGoogle;
+  String get accountSignInMethod;
+  String get accountSignInPassword;
+  String get accountStore;
+  String get accountTitle;
   String get accessDisabledBody;
   String get accessDisabledTitle;
   String get actualCount;

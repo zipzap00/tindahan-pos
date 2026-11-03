@@ -21,6 +21,59 @@ class FilStrings extends Strings {
   String get aboutTitle => 'Tungkol sa app';
 
   @override
+  String get accountCaption => 'Sino ang naka-sign in, at palitan ang password';
+
+  @override
+  String get accountChangePassword => 'Palitan ang password';
+
+  @override
+  String get accountCurrentPassword => 'Kasalukuyang password';
+
+  @override
+  String get accountCurrentPasswordWrong => 'Mali ang kasalukuyang password mo.';
+
+  @override
+  String get accountGooglePasswordNote =>
+      'Google ang gamit mo sa pag-sign in, kaya walang password ang account na ito sa app. Para palitan, palitan ang password ng Google account mo.';
+
+  @override
+  String get accountName => 'Pangalan';
+
+  @override
+  String get accountNewPassword => 'Bagong password';
+
+  @override
+  String get accountPasswordChanged => 'Napalitan na ang password. Gamitin ang bago sa susunod na pag-sign in.';
+
+  @override
+  String get accountPasswordNotShown =>
+      'Para sa seguridad mo, walang makakakita ng password mo, kahit ang app. Kung nakalimutan mo, mag-send ng reset email.';
+
+  @override
+  String get accountPasswordTitle => 'Password';
+
+  @override
+  String get accountRole => 'Tungkulin';
+
+  @override
+  String get accountSamePassword => 'Dapat iba ang bagong password sa kasalukuyan.';
+
+  @override
+  String get accountSignInGoogle => 'Google';
+
+  @override
+  String get accountSignInMethod => 'Naka-sign in gamit ang';
+
+  @override
+  String get accountSignInPassword => 'Email at password';
+
+  @override
+  String get accountStore => 'Tindahan';
+
+  @override
+  String get accountTitle => 'Aking account';
+
+  @override
   String get accessDisabledBody => 'Pinatay ng may-ari ng tindahan ang access ng account na ito. Kausapin ang may-ari para buksan ulit.';
 
   @override

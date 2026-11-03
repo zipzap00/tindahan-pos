@@ -1,6 +1,6 @@
 # Tindahan POS
 
-A Flutter + Firebase app for running a sari-sari store from one phone: point of sale, inventory, daily sales, utang (credit) and expenses. Money is in Philippine pesos (₱) and every date follows Philippine time (Asia/Manila, UTC+8). The app speaks Taglish by default and can switch to English.
+A Flutter + Firebase app for running a sari-sari store from one phone: point of sale, inventory, daily sales, utang (credit) and expenses. Money is in Philippine pesos (₱) and every date follows Philippine time (Asia/Manila, UTC+8). The app is in English by default and can switch to Filipino (Taglish).
 
 > **Status:** Compiles on Flutter 3.44.6, `flutter analyze` is clean, `flutter test` passes and a debug APK builds. It is connected to Firebase project `tindahan-pos-b57e2`, with rules and indexes deployed. See [Known gaps](#known-gaps).
 
