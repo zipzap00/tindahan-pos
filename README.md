@@ -124,6 +124,6 @@ Every sale, refund, restock and adjustment is **one atomic batch**: the sale, th
 
 ## Design
 
-The UI follows the light, transactional track of `DESIGN.md`: cream canvas `#fbfbf5`, black pill buttons, aloe `#c1fbd4` featured cards, pistachio `#d4f9e0` bands, Inter at weights 330 / 420 / 550 with `ss03`, 12 px card radius, 8 px input radius. The welcome and loading screens use the same cream canvas, with the Tindahan logo recoloured to ink and aloe (`assets/images/logo.png`). `DESIGN.md` has no red or amber, so stock and status use an icon plus a word on aloe, shade or ink pills, never colour alone. The token mapping is in `context/ui-mapping.md`.
+The UI follows `DESIGN.md` (BudgetZen): soft mint `#10B981` on a `#FAFFFE` canvas, sky `#38BDF8` for tips, warm greys, Manrope headings, Nunito body, 12 px buttons, inputs and cards, and gentle ink shadows. Status always pairs an icon and a word on a tinted chip, never colour alone. The logo is a sari-sari store front with a peso coin, drawn by the painters in `lib/ui/widgets/brand.dart`. The token mapping is in `context/ui-mapping.md`.
 
-Inter is bundled under the SIL Open Font License (`assets/fonts/Inter-LICENSE.txt`).
+Manrope, Nunito and Source Code Pro are bundled under the SIL Open Font License (licences in `assets/fonts/`).

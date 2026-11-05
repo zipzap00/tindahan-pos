@@ -35,7 +35,7 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 - [x] `flutterfire configure` (Android `ph.tindahan.tindahan_pos`, iOS `ph.tindahan.tindahanPos`), `.firebaserc` default project, `firebase deploy --only firestore`
 
 ### Phase 1: Design System
-- [x] Tokens from DESIGN.md, theme, Inter bundled
+- [x] Tokens from DESIGN.md, theme, Manrope, Nunito and Source Code Pro bundled
 - [x] Shared widgets: buttons, cards, tags, inputs, layout, states, dialogs
 
 ### Phase 2: Auth and Store
@@ -64,11 +64,23 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 - [x] Expenses
 - [x] Cashier accounts, enable/disable, audit log
 
+### Phase 5b: Brand and Polish
+- [x] HD vector logo; app icons and launch images generated from it
+- [x] Animated loading page with a matching web and native pre-launch screen
+- [x] Welcome, dashboard, More and shared panels refreshed; desktop browser column
+- [x] Fixed dashboard 7-day chart overflow, wrapped "COUNT" header, and `StatRow` values not reaching the right edge
+
+### Phase 5c: BudgetZen Redesign
+- [x] Tokens, theme and shared widgets moved to the new `DESIGN.md` (no feature changes)
+- [x] New logo; app icons, launch images and web pre-launch screen regenerated
+- [x] Dark mode: More → Appearance (System, Light, Dark), saved on the phone
+- [ ] Look through the signed-in screens on a phone, in light and dark (only Welcome, sign-in, loading and the shared widgets were checked by eye)
+
 ### Phase 6: Verification (open)
 - [x] `flutter analyze` clean
-- [x] `flutter test` green on a real SDK (39 tests, incl. a smoke test of the no-Firebase start-up path)
+- [x] `flutter test` green on a real SDK (62 tests, incl. a smoke test of the no-Firebase start-up path and the loading screen)
 - [ ] Rules tests in the Firebase emulator (cashier limits, stock ≥ 0, 15+ item cart)
-- [ ] Device test on a low-end Android phone (Android 8+, 2 GB RAM)
+- [ ] Device test on a low-end Android phone (Android 8+, 2 GB RAM), including the new launch screen and adaptive icon
 - [ ] Offline test: sell with airplane mode on, then reconnect
 - [ ] Native review of Filipino strings
 
@@ -81,8 +93,13 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 - Cancel only allowed on sales with no refunds, to keep the arithmetic simple and auditable.
 - Refund and cancel adjust the **original sale day's** stats, so past days stay correct.
 - Dashboard reads aggregated `dailyStats`, not raw sales.
-- No red or amber anywhere: DESIGN.md has none. Status uses icon + word.
+- Redesign (2026-11-05, owner's request): `DESIGN.md` is now BudgetZen, replacing the black, cream and aloe look. Features unchanged; the app keeps the name Tindahan. The older branding notes below describe the previous look. Status still uses icon + word, now on DESIGN.md's green, amber and red chips; red only for failed or blocked things, so refunds stay neutral and short cash at checkout is amber. Departures from DESIGN.md are listed in `ui-mapping.md`. White on mint (#10B981) is DESIGN.md's button spec and is followed as written, though its contrast is only about 2.5:1.
+- Dark mode (2026-11-05, owner's request): follows the phone by default, because that is what people expect and light-phone users see no change. `DESIGN.md` has no dark theme, so the palette is derived from its stone greys (see `ui-mapping.md`). `AppColors` reads a swappable palette rather than `Theme.of(context)`, so screens stayed almost untouched and no package was added; the cost is that colours are no longer compile-time constants. Filipino labels (Itsura, Sistema, Maliwanag, Madilim) need native review.
+- New logo (2026-11-05, owner gave free choice): rounded sari-sari store front, mint and sky awning, peso coin in the hatch. The coin lights up in the loading animation. The icon is white and sky on a mint tile. Money and quantity figures use Manrope because Nunito has no tabular figures.
 - Branding (2026-11-03, owner's request): the Welcome screen uses the cream canvas like every other screen instead of DESIGN.md's black cinematic welcome. The owner's logo (`photo/logo.png`, navy/red/yellow) was recoloured to ink + aloe with a transparent background as `assets/images/logo.png` and shown top-left on Welcome via `AppLogo`. Start-up shows a branded loading screen (logo, spinner, "Opening the store…") for at least 1.5 s (`AuthGate.minSplash`), then fades to the next screen. Android launch background and web page background are cream to avoid a white flash.
+- Logo and start-up (2026-11-05, owner's request for an HD logo and a better loading page): the raster logo is replaced by vector painters in `brand.dart`, redrawn from the same design with five awning stripes instead of six so both ends match. `tool/generate_brand_assets.dart` renders every Android, iOS and web icon and launch image from those painters, replacing the Flutter defaults; `assets/brand/` holds full-size exports and is not bundled. App icon is ink and white on an aloe tile, because aloe stripes vanish on aloe. Loading page: the store opens (pale awning fills in stripe by stripe, lights come on, name appears, 1.3 s, shown complete at once when animations are off). `web/index.html` and the native launch images show the same closed store in the same place, so the hand-over is not visible; keep those numbers in step with `SplashScreen`.
+- Awning band added as the brand's one decorative shape (`AwningPanel`), on Welcome and the dashboard hero only. DESIGN.md does not define it; it comes from the logo. It replaces the featured card there, using the same aloe fill.
+- `AppViewport` keeps the app in a 560 px column in wide browser windows rather than building a separate desktop layout: this is a phone app and the web build is for testing.
 - English is the default language (changed 2026-11-03, was Taglish); Filipino (Taglish) stays selectable under More → Language and on the welcome screen. A saved choice of Filipino is kept.
 - Export is CSV with UTF-8 BOM (opens in Excel) rather than native `.xlsx`.
 - Cashiers created through a secondary FirebaseApp so the owner stays signed in.

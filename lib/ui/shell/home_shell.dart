@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/l10n/language.dart';
+import '../../core/theme/tokens.dart';
 import '../../domain/inventory.dart';
 import '../screens/dashboard/dashboard_screen.dart';
 import '../screens/inventory/inventory_screen.dart';
@@ -116,11 +117,16 @@ class _HomeShellState extends State<HomeShell> {
             index: _index,
             children: [for (final tab in _tabs) _screenFor(tab)],
           ),
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: _index,
-            onDestinationSelected: (index) => setState(() => _index = index),
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            destinations: [for (final tab in _tabs) _destinationFor(tab, context)],
+          bottomNavigationBar: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: AppColors.hairline)),
+            ),
+            child: NavigationBar(
+              selectedIndex: _index,
+              onDestinationSelected: (index) => setState(() => _index = index),
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              destinations: [for (final tab in _tabs) _destinationFor(tab, context)],
+            ),
           ),
         ),
       ),

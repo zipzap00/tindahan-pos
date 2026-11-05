@@ -49,6 +49,7 @@ class _StaffScreenState extends State<StaffScreen> {
         title: s.disableCashierTitle,
         message: s.disableCashierMessage(member.displayName),
         confirmLabel: s.disable,
+        destructive: true,
       );
       if (!confirmed || !mounted) return;
     }
@@ -74,7 +75,7 @@ class _StaffScreenState extends State<StaffScreen> {
           return ListView(
             padding: const EdgeInsets.fromLTRB(AppSpace.screen, 0, AppSpace.screen, AppSpace.xl),
             children: [
-              Text(s.cashierRightsNote, style: AppType.caption),
+              Text(s.cashierRightsNote, style: AppType.bodySmall),
               const SizedBox(height: AppSpace.lg),
               if (error != null)
                 ErrorCard(error: error, onRetry: members.retry)
@@ -89,7 +90,7 @@ class _StaffScreenState extends State<StaffScreen> {
                         title: member.displayName,
                         subtitle: member.email,
                         trailing: member.isOwner
-                            ? TagPill(label: s.roleOwner, tone: TagTone.mint)
+                            ? TagPill(label: s.roleOwner, tone: TagTone.success)
                             : Switch(
                                 value: member.active,
                                 onChanged: (value) => _setActive(session, member, value),
@@ -167,9 +168,9 @@ class _AddCashierSheetState extends State<_AddCashierSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(s.addCashier, style: AppType.headingLg),
+            Text(s.addCashier, style: AppType.subhead),
             const SizedBox(height: AppSpace.xs),
-            Text(s.addCashierCaption, style: AppType.caption),
+            Text(s.addCashierCaption, style: AppType.bodySmall),
             const SizedBox(height: AppSpace.lg),
             AppTextField(
               label: s.cashierName,

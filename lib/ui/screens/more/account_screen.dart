@@ -208,7 +208,7 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
           ),
           if (message != null) ...[
             const SizedBox(height: AppSpace.lg),
-            InlineNotice(message: message, icon: Icons.error_outline_rounded),
+            InlineNotice(message: message, icon: Icons.error_outline_rounded, tone: NoticeTone.error),
           ],
           const SizedBox(height: AppSpace.xl),
           PillButton(label: s.accountChangePassword, onPressed: _submit, loading: _busy, expand: true),

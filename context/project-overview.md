@@ -30,7 +30,7 @@ Bottom navigation (owner): **Buod** (dashboard) · **Benta** (POS) · **Paninda*
 
 | Area | Screens |
 |---|---|
-| Auth | Loading screen with logo, Welcome (cream canvas, logo top-left), sign in, sign up, create store, access disabled, start-up error |
+| Auth | Loading screen with logo, Welcome (logo top-left), sign in, sign up, create store, access disabled, start-up error |
 | Dashboard | Today's sales, profit, transactions, expenses · stock counts (tap to open filtered inventory) · today/week/month summary · 7-day bars · best sellers · recent transactions |
 | POS | Product grid with search · cart sheet · checkout (cash with quick-cash and change, or utang) · receipt |
 | Sales | History by day · sale detail with refund sheet and cancel |

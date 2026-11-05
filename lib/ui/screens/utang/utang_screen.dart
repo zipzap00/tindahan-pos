@@ -77,14 +77,14 @@ class _UtangScreenState extends State<UtangScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(s.totalReceivable.toUpperCase(), style: AppType.eyebrowCap),
+                          Text(s.totalReceivable.toUpperCase(), style: AppType.overline),
                           const SizedBox(height: AppSpace.sm),
                           FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            child: Text(formatPeso(receivable), style: AppType.tabular(AppType.displayMd)),
+                            child: Text(formatPeso(receivable), style: AppType.tabular(AppType.display)),
                           ),
-                          Text(s.customersWithBalance(debtors), style: AppType.bodyMd),
+                          Text(s.customersWithBalance(debtors), style: AppType.body),
                         ],
                       ),
                     ),
@@ -118,7 +118,7 @@ class _UtangScreenState extends State<UtangScreen> {
                               subtitle: customer.phone,
                               trailing: customer.balance > 0
                                   ? Text(formatPeso(customer.balance), style: AppType.tabular(AppType.bodyStrong))
-                                  : TagPill(label: s.paidUp, tone: TagTone.mint, icon: Icons.check_rounded),
+                                  : TagPill(label: s.paidUp, tone: TagTone.success, icon: Icons.check_rounded),
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute<void>(
                                   builder: (_) => CustomerDetailScreen(customerId: customer.id),

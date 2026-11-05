@@ -56,6 +56,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       title: archiving ? s.archiveProductTitle : s.restoreProductTitle,
       message: archiving ? s.archiveProductMessage(product.name) : s.restoreProductMessage(product.name),
       confirmLabel: archiving ? s.archive : s.restore,
+      destructive: archiving,
     );
     if (!confirmed || !mounted) return;
     final result = await StoreScope.of(context).catalog.setArchived(product, archived: archiving);
@@ -122,17 +123,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           body: ListView(
             padding: const EdgeInsets.fromLTRB(AppSpace.screen, 0, AppSpace.screen, AppSpace.xl),
             children: [
-              Text(product.name, style: AppType.headingXl),
+              Text(product.name, style: AppType.headline),
               const SizedBox(height: AppSpace.sm),
               Wrap(
                 spacing: AppSpace.sm,
                 runSpacing: AppSpace.sm,
                 children: [
                   if (product.archived)
-                    TagPill(label: s.archivedLabel, tone: TagTone.outline, icon: Icons.archive_outlined)
+                    TagPill(label: s.archivedLabel, tone: TagTone.neutral, icon: Icons.archive_outlined)
                   else
                     StockBadge(status: product.status),
-                  if (product.category.isNotEmpty) TagPill(label: product.category, tone: TagTone.outline),
+                  if (product.category.isNotEmpty) TagPill(label: product.category, tone: TagTone.neutral),
                 ],
               ),
               const SizedBox(height: AppSpace.lg),
@@ -145,12 +146,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(s.sellingPricePerPiece.toUpperCase(), style: AppType.eyebrowCap),
+                          Text(s.sellingPricePerPiece.toUpperCase(), style: AppType.overline),
                           const SizedBox(height: AppSpace.sm),
                           FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            child: Text(formatPeso(product.sellingPrice), style: AppType.tabular(AppType.displayMd)),
+                            child: Text(formatPeso(product.sellingPrice), style: AppType.tabular(AppType.display)),
                           ),
                         ],
                       ),
@@ -158,10 +159,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(s.onHand.toUpperCase(), style: AppType.eyebrowCap),
+                        Text(s.onHand.toUpperCase(), style: AppType.overline),
                         const SizedBox(height: AppSpace.sm),
-                        Text('${product.stock}', style: AppType.tabular(AppType.headingXl)),
-                        Text(s.minLevel(product.minStock), style: AppType.micro),
+                        Text('${product.stock}', style: AppType.tabular(AppType.headline)),
+                        Text(s.minLevel(product.minStock), style: AppType.caption),
                       ],
                     ),
                   ],
@@ -187,7 +188,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       StatRow(label: s.expectedIncome, value: formatPeso(preview.expectedIncome), emphasize: true),
                       if (preview.sellsBelowCost) ...[
                         const SizedBox(height: AppSpace.md),
-                        InlineNotice(icon: Icons.warning_amber_rounded, message: s.priceBelowCost),
+                        InlineNotice(icon: Icons.warning_amber_rounded, tone: NoticeTone.warning, message: s.priceBelowCost),
                       ],
                     ],
                   ),

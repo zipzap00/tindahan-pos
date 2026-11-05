@@ -25,11 +25,13 @@ void showMessage(BuildContext context, String message) {
 }
 
 /// Confirmation that names what will happen. Returns true when confirmed.
+/// [destructive] draws the confirm button in red, for actions that lose data.
 Future<bool> showConfirmDialog(
   BuildContext context, {
   required String title,
   required String message,
   required String confirmLabel,
+  bool destructive = false,
 }) async {
   final s = context.s;
   final result = await showDialog<bool>(
@@ -46,6 +48,7 @@ Future<bool> showConfirmDialog(
         ),
         PillButton(
           label: confirmLabel,
+          variant: destructive ? PillVariant.destructive : PillVariant.primary,
           onPressed: () => Navigator.of(dialogContext).pop(true),
         ),
       ],
@@ -60,19 +63,31 @@ Future<String?> showReasonDialog(
   required String title,
   required String message,
   required String confirmLabel,
+  bool destructive = false,
 }) {
   return showDialog<String>(
     context: context,
-    builder: (dialogContext) => _ReasonDialog(title: title, message: message, confirmLabel: confirmLabel),
+    builder: (dialogContext) => _ReasonDialog(
+      title: title,
+      message: message,
+      confirmLabel: confirmLabel,
+      destructive: destructive,
+    ),
   );
 }
 
 class _ReasonDialog extends StatefulWidget {
-  const _ReasonDialog({required this.title, required this.message, required this.confirmLabel});
+  const _ReasonDialog({
+    required this.title,
+    required this.message,
+    required this.confirmLabel,
+    required this.destructive,
+  });
 
   final String title;
   final String message;
   final String confirmLabel;
+  final bool destructive;
 
   @override
   State<_ReasonDialog> createState() => _ReasonDialogState();
@@ -115,6 +130,7 @@ class _ReasonDialogState extends State<_ReasonDialog> {
         PillButton(label: s.cancel, variant: PillVariant.ghost, onPressed: () => Navigator.of(context).pop()),
         PillButton(
           label: widget.confirmLabel,
+          variant: widget.destructive ? PillVariant.destructive : PillVariant.primary,
           onPressed: canConfirm ? () => Navigator.of(context).pop(_controller.text.trim()) : null,
         ),
       ],

@@ -102,15 +102,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(s.totalDue.toUpperCase(), style: AppType.eyebrowCap),
+                    Text(s.totalDue.toUpperCase(), style: AppType.overline),
                     const SizedBox(height: AppSpace.sm),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
-                      child: Text(formatPeso(total), style: AppType.tabular(AppType.displayMd)),
+                      child: Text(formatPeso(total), style: AppType.tabular(AppType.display)),
                     ),
                     const SizedBox(height: AppSpace.xs),
-                    Text(s.itemCount(cart.itemCount), style: AppType.bodyMd),
+                    Text(s.itemCount(cart.itemCount), style: AppType.body),
                   ],
                 ),
               ),
@@ -118,11 +118,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 const SizedBox(height: AppSpace.md),
                 InlineNotice(
                   icon: Icons.warning_amber_rounded,
+                  tone: NoticeTone.warning,
                   message: s.notEnoughStockFor(problems.map((p) => p.name).join(', ')),
                 ),
               ],
               const SizedBox(height: AppSpace.xl),
-              Text(s.paymentMethod, style: AppType.headingSm),
+              Text(s.paymentMethod, style: AppType.subhead),
               const SizedBox(height: AppSpace.md),
               SegmentedPills<PaymentType>(
                 options: PaymentType.values,
@@ -161,10 +162,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   tone: CardTone.band,
                   child: Row(
                     children: [
-                      Expanded(child: Text(s.changeLabel, style: AppType.headingSm)),
+                      Expanded(child: Text(s.changeLabel, style: AppType.subhead)),
                       Text(
                         paid == 0 ? formatPeso(0) : formatPeso(change < 0 ? 0 : change),
-                        style: AppType.tabular(AppType.headingXl),
+                        style: AppType.tabular(AppType.headline),
                       ),
                     ],
                   ),
@@ -172,7 +173,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 if (paid > 0 && change < 0) ...[
                   const SizedBox(height: AppSpace.md),
                   InlineNotice(
-                    icon: Icons.error_outline_rounded,
+                    icon: Icons.warning_amber_rounded,
+                    tone: NoticeTone.warning,
                     message: s.cashShort(formatPeso(-change)),
                   ),
                 ],
@@ -194,11 +196,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           children: [
                             Text(customer?.name ?? s.chooseCustomer, style: AppType.bodyStrong),
                             if (customer != null)
-                              Text(s.currentBalance(formatPeso(customer.balance)), style: AppType.caption),
+                              Text(s.currentBalance(formatPeso(customer.balance)), style: AppType.bodySmall),
                           ],
                         ),
                       ),
-                      Text(customer == null ? '' : s.changeCustomer, style: AppType.caption),
+                      Text(customer == null ? '' : s.changeCustomer, style: AppType.bodySmall),
                       const Icon(Icons.chevron_right_rounded),
                     ],
                   ),

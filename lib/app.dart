@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'core/l10n/language.dart';
 import 'core/result.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/appearance.dart';
+import 'core/theme/tokens.dart';
 import 'data/repositories/auth_repository.dart';
 import 'data/session_controller.dart';
 import 'data/store_session.dart';
@@ -15,26 +18,52 @@ import 'ui/screens/auth/create_store_screen.dart';
 import 'ui/screens/auth/status_screens.dart';
 import 'ui/screens/auth/welcome_screen.dart';
 import 'ui/shell/home_shell.dart';
+import 'ui/widgets/layout.dart';
 
 class TindahanApp extends StatefulWidget {
-  const TindahanApp({super.key, required this.language, this.startupError});
+  const TindahanApp({super.key, required this.language, required this.appearance, this.startupError});
 
   final LanguageController language;
+  final AppearanceController appearance;
   final AppError? startupError;
 
   @override
   State<TindahanApp> createState() => _TindahanAppState();
 }
 
-class _TindahanAppState extends State<TindahanApp> {
+class _TindahanAppState extends State<TindahanApp> with WidgetsBindingObserver {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   SessionController? _sessionController;
   AuthRepository? _authRepository;
   Type? _lastStateType;
 
+  Brightness get _brightness =>
+      widget.appearance.resolve(WidgetsBinding.instance.platformDispatcher.platformBrightness);
+
+  /// Moves to the palette the setting and the phone call for. Colours are read
+  /// during build, and const widgets would otherwise keep the old ones, so
+  /// every element is rebuilt. Rebuilding in place keeps open screens and
+  /// half-filled forms, which recreating the tree would lose.
+  void _applyAppearance() {
+    if (!AppColors.use(_brightness)) return;
+    void rebuild(Element element) {
+      element.markNeedsBuild();
+      element.visitChildren(rebuild);
+    }
+
+    (context as Element).visitChildren(rebuild);
+    setState(() {});
+  }
+
+  @override
+  void didChangePlatformBrightness() => _applyAppearance();
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    widget.appearance.addListener(_applyAppearance);
+    AppColors.use(_brightness);
     if (widget.startupError == null) {
       final auth = FirebaseAuth.instance;
       final db = FirebaseFirestore.instance;
@@ -57,6 +86,8 @@ class _TindahanAppState extends State<TindahanApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    widget.appearance.removeListener(_applyAppearance);
     _sessionController?.removeListener(_onSessionChanged);
     _sessionController?.dispose();
     super.dispose();
@@ -66,23 +97,32 @@ class _TindahanAppState extends State<TindahanApp> {
   Widget build(BuildContext context) {
     final controller = _sessionController;
     final authRepository = _authRepository;
-    return LanguageScope(
-      controller: widget.language,
-      child: MaterialApp(
-        title: 'Tindahan',
-        debugShowCheckedModeBanner: false,
-        theme: buildAppTheme(),
-        navigatorKey: _navigatorKey,
-        builder: (context, navigator) {
-          final child = navigator ?? const SizedBox.shrink();
-          if (controller == null || authRepository == null) return child;
-          return AppServices(
-            sessionController: controller,
-            authRepository: authRepository,
-            child: _SessionScopeHost(controller: controller, child: child),
-          );
-        },
-        home: controller == null ? SetupNeededScreen(error: widget.startupError) : const AuthGate(),
+    return AppearanceScope(
+      controller: widget.appearance,
+      child: LanguageScope(
+        controller: widget.language,
+        child: MaterialApp(
+          title: 'Tindahan',
+          debugShowCheckedModeBanner: false,
+          // One theme for the active palette, swapped at once with the colours.
+          theme: buildAppTheme(),
+          themeAnimationDuration: Duration.zero,
+          navigatorKey: _navigatorKey,
+          builder: (context, navigator) {
+            // Tab screens have no AppBar to set the status bar icons for them.
+            final child = AnnotatedRegion<SystemUiOverlayStyle>(
+              value: AppColors.isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+              child: AppViewport(child: navigator ?? const SizedBox.shrink()),
+            );
+            if (controller == null || authRepository == null) return child;
+            return AppServices(
+              sessionController: controller,
+              authRepository: authRepository,
+              child: _SessionScopeHost(controller: controller, child: child),
+            );
+          },
+          home: controller == null ? SetupNeededScreen(error: widget.startupError) : const AuthGate(),
+        ),
       ),
     );
   }

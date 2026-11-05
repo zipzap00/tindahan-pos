@@ -518,6 +518,18 @@ class FilStrings extends Strings {
   String get languageTitle => 'Wika';
 
   @override
+  String get appearanceTitle => 'Itsura';
+
+  @override
+  String get appearanceSystem => 'Sistema';
+
+  @override
+  String get appearanceLight => 'Maliwanag';
+
+  @override
+  String get appearanceDark => 'Madilim';
+
+  @override
   String get lastSevenDays => 'Benta nitong 7 araw';
 
   @override

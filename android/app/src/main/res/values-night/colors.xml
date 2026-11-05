@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AppPalette.dark.background, so a dark phone has no white flash at launch. -->
+    <color name="canvas">#1C1917</color>
+</resources>

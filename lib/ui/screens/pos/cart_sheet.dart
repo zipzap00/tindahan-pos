@@ -52,7 +52,7 @@ class _CartSheet extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(AppSpace.xl, 0, AppSpace.sm, AppSpace.sm),
                 child: Row(
                   children: [
-                    Expanded(child: Text(s.cartTitle, style: AppType.headingLg)),
+                    Expanded(child: Text(s.cartTitle, style: AppType.subhead)),
                     PillButton(
                       label: s.clearCart,
                       variant: PillVariant.ghost,
@@ -62,6 +62,7 @@ class _CartSheet extends StatelessWidget {
                           title: s.clearCartTitle,
                           message: s.clearCartMessage,
                           confirmLabel: s.clearCart,
+                          destructive: true,
                         );
                         if (confirmed) cart.clear();
                       },
@@ -93,7 +94,7 @@ class _CartSheet extends StatelessWidget {
                                   const SizedBox(height: AppSpace.xxs),
                                   Text(
                                     s.priceEach(formatPeso(line.unitPrice)),
-                                    style: AppType.caption,
+                                    style: AppType.bodySmall,
                                   ),
                                 ],
                               ),
@@ -125,6 +126,7 @@ class _CartSheet extends StatelessWidget {
                           const SizedBox(height: AppSpace.sm),
                           InlineNotice(
                             icon: Icons.warning_amber_rounded,
+                            tone: NoticeTone.warning,
                             message: problem.available <= 0
                                 ? s.cartLineUnavailable(line.name)
                                 : s.cartLineTooMany(line.name, problem.available),
@@ -159,7 +161,7 @@ class _CartSheet extends StatelessWidget {
                     ),
                     if (problems.isNotEmpty) ...[
                       const SizedBox(height: AppSpace.sm),
-                      Text(s.fixCartFirst, style: AppType.micro, textAlign: TextAlign.center),
+                      Text(s.fixCartFirst, style: AppType.caption, textAlign: TextAlign.center),
                     ],
                   ],
                 ),

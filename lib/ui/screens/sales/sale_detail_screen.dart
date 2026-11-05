@@ -54,6 +54,7 @@ class _SaleDetailScreenState extends State<SaleDetailScreen> {
       title: s.cancelSaleTitle,
       message: s.cancelSaleMessage(formatPeso(sale.total)),
       confirmLabel: s.cancelSale,
+      destructive: true,
     );
     if (reason == null || !mounted) return;
     final result = await session.sales.cancel(
@@ -105,16 +106,16 @@ class _SaleDetailScreenState extends State<SaleDetailScreen> {
                 runSpacing: AppSpace.sm,
                 children: [
                   if (sale.isCancelled)
-                    TagPill(label: s.statusCancelled, tone: TagTone.ink, icon: Icons.block_rounded)
+                    TagPill(label: s.statusCancelled, tone: TagTone.error, icon: Icons.block_rounded)
                   else if (sale.status == SaleStatus.refunded)
-                    TagPill(label: s.statusRefunded, tone: TagTone.shade, icon: Icons.undo_rounded)
+                    TagPill(label: s.statusRefunded, tone: TagTone.neutral, icon: Icons.undo_rounded)
                   else if (sale.hasRefund)
-                    TagPill(label: s.statusPartRefund, tone: TagTone.shade, icon: Icons.undo_rounded)
+                    TagPill(label: s.statusPartRefund, tone: TagTone.neutral, icon: Icons.undo_rounded)
                   else
-                    TagPill(label: s.statusCompleted, tone: TagTone.mint, icon: Icons.check_rounded),
+                    TagPill(label: s.statusCompleted, tone: TagTone.success, icon: Icons.check_rounded),
                   TagPill(
                     label: sale.paymentType == PaymentType.utang ? s.paymentUtang : s.paymentCash,
-                    tone: TagTone.outline,
+                    tone: TagTone.neutral,
                   ),
                 ],
               ),
@@ -125,8 +126,8 @@ class _SaleDetailScreenState extends State<SaleDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (created != null)
-                      Text(ManilaTime.formatDateTime(ManilaTime.toManila(created), s), style: AppType.caption),
-                    Text(s.soldBy(sale.cashierName), style: AppType.caption),
+                      Text(ManilaTime.formatDateTime(ManilaTime.toManila(created), s), style: AppType.bodySmall),
+                    Text(s.soldBy(sale.cashierName), style: AppType.bodySmall),
                     const Divider(height: AppSpace.xl),
                     for (final item in sale.items)
                       StatRow(
@@ -277,8 +278,8 @@ class _RefundSheetState extends State<_RefundSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(s.refundItems, style: AppType.headingLg),
-          Text(s.refundCaption, style: AppType.caption),
+          Text(s.refundItems, style: AppType.subhead),
+          Text(s.refundCaption, style: AppType.bodySmall),
           const SizedBox(height: AppSpace.lg),
           for (final item in widget.sale.items)
             if (item.refundableQty > 0)
@@ -293,7 +294,7 @@ class _RefundSheetState extends State<_RefundSheet> {
                           Text(item.name, style: AppType.bodyStrong),
                           Text(
                             s.refundableOf(item.refundableQty, formatPeso(item.unitPrice)),
-                            style: AppType.caption,
+                            style: AppType.bodySmall,
                           ),
                         ],
                       ),

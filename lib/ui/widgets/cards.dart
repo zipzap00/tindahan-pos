@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import '../../core/theme/tokens.dart';
 
 enum CardTone {
-  /// card-pricing: white, 1 px hairline, flat.
+  /// Default card: white, 1 px hairline, subtle shadow.
   plain,
 
-  /// card-pricing-featured: aloe fill. The one highlighted card on a screen.
+  /// Mint tint: the one highlighted card on a screen.
   featured,
 
-  /// card-pistachio-band: wide pistachio band for a group of facts.
+  /// Quiet mint wash for a group of facts.
   band,
 
-  /// White with DESIGN.md level-3 stacked shadows.
+  /// Elevated card: white, 16 px radius, medium shadow.
   raised,
 }
 
@@ -21,7 +21,7 @@ class AppCard extends StatelessWidget {
     super.key,
     required this.child,
     this.tone = CardTone.plain,
-    this.padding = const EdgeInsets.all(AppSpace.xl),
+    this.padding = const EdgeInsets.all(AppSpace.card),
     this.onTap,
     this.semanticLabel,
   });
@@ -35,15 +35,24 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (tone) {
-      CardTone.plain || CardTone.raised => AppColors.canvasLight,
-      CardTone.featured => AppColors.aloe10,
-      CardTone.band => AppColors.pistachio10,
+      CardTone.plain || CardTone.raised => AppColors.surface,
+      CardTone.featured => AppColors.primaryTint,
+      CardTone.band => AppColors.primaryWash,
     };
+    final radius = tone == CardTone.raised ? AppRadius.cardElevated : AppRadius.card;
     final decoration = BoxDecoration(
       color: color,
-      borderRadius: AppRadius.card,
-      border: tone == CardTone.plain ? Border.all(color: AppColors.hairlineLight) : null,
-      boxShadow: tone == CardTone.raised ? AppShadows.level3 : null,
+      borderRadius: radius,
+      border: switch (tone) {
+        CardTone.plain => Border.all(color: AppColors.hairline),
+        CardTone.featured || CardTone.band => Border.all(color: AppColors.primaryBorder),
+        CardTone.raised => null,
+      },
+      boxShadow: switch (tone) {
+        CardTone.plain => AppShadows.subtle,
+        CardTone.raised => AppShadows.medium,
+        CardTone.featured || CardTone.band => null,
+      },
     );
     final body = Padding(padding: padding, child: child);
     final tap = onTap;
@@ -57,7 +66,7 @@ class AppCard extends StatelessWidget {
             : Material(
                 type: MaterialType.transparency,
                 child: InkWell(
-                  borderRadius: AppRadius.card,
+                  borderRadius: radius,
                   onTap: tap,
                   child: body,
                 ),
@@ -83,9 +92,10 @@ class ListCard extends StatelessWidget {
     }
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.canvasLight,
+        color: AppColors.surface,
         borderRadius: AppRadius.card,
-        border: Border.all(color: AppColors.hairlineLight),
+        border: Border.all(color: AppColors.hairline),
+        boxShadow: AppShadows.subtle,
       ),
       clipBehavior: Clip.antiAlias,
       child: Material(
@@ -135,7 +145,7 @@ class ListRow extends StatelessWidget {
                   Text(title, style: AppType.bodyStrong, maxLines: titleMaxLines, overflow: TextOverflow.ellipsis),
                   if (sub != null && sub.isNotEmpty) ...[
                     const SizedBox(height: AppSpace.xxs),
-                    Text(sub, style: AppType.caption, maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(sub, style: AppType.bodySmall, maxLines: 2, overflow: TextOverflow.ellipsis),
                   ],
                 ],
               ),
@@ -148,6 +158,27 @@ class ListRow extends StatelessWidget {
     final tap = onTap;
     if (tap == null) return content;
     return InkWell(onTap: tap, child: content);
+  }
+}
+
+/// An icon in a round mint chip, so icons sit in panels with the same weight
+/// as the initials avatars.
+class IconChip extends StatelessWidget {
+  const IconChip({super.key, required this.icon, this.size = 40, this.color = AppColors.primaryTint});
+
+  final IconData icon;
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      child: Icon(icon, size: size * 0.55, color: AppColors.primaryDark),
+    );
   }
 }
 
@@ -171,8 +202,8 @@ class InitialsAvatar extends StatelessWidget {
       width: size,
       height: size,
       alignment: Alignment.center,
-      decoration: const BoxDecoration(color: AppColors.pistachio10, shape: BoxShape.circle),
-      child: Text(initials, style: AppType.bodyStrong),
+      decoration: const BoxDecoration(color: AppColors.primaryTint, shape: BoxShape.circle),
+      child: Text(initials, style: AppType.bodyStrong.copyWith(color: AppColors.primaryDark)),
     );
   }
 }

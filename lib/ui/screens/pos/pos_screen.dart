@@ -121,7 +121,7 @@ class _PosScreenState extends State<PosScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(AppSpace.screen, AppSpace.lg, AppSpace.screen, AppSpace.md),
-                child: Semantics(header: true, child: Text(s.posTitle, style: AppType.headingXl)),
+                child: Semantics(header: true, child: Text(s.posTitle, style: AppType.headline)),
               ),
               PagePadding(
                 child: SearchField(
@@ -151,8 +151,8 @@ class _PosScreenState extends State<PosScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(s.itemCount(cart.itemCount), style: AppType.caption),
-                            Text(formatPeso(cart.total), style: AppType.tabular(AppType.headingLg)),
+                            Text(s.itemCount(cart.itemCount), style: AppType.bodySmall),
+                            Text(formatPeso(cart.total), style: AppType.tabular(AppType.subhead)),
                           ],
                         ),
                       ),
@@ -190,10 +190,10 @@ class _ProductTile extends StatelessWidget {
           '${selected ? ', ${s.inCartCount(inCart)}' : ''}',
       excludeSemantics: true,
       child: Material(
-        color: AppColors.canvasLight,
+        color: selected ? AppColors.primaryWash : AppColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.card,
-          side: BorderSide(color: selected ? AppColors.ink : AppColors.hairlineLight, width: selected ? 1.5 : 1),
+          side: BorderSide(color: selected ? AppColors.primary : AppColors.hairline, width: selected ? 1.5 : 1),
         ),
         child: InkWell(
           borderRadius: AppRadius.card,
@@ -223,25 +223,25 @@ class _ProductTile extends StatelessWidget {
                           height: 28,
                           padding: const EdgeInsets.symmetric(horizontal: AppSpace.sm),
                           alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: AppColors.ink,
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius: AppRadius.chip,
                           ),
                           child: Text(
                             '$inCart',
-                            style: AppType.tabular(AppType.caption).copyWith(color: AppColors.onPrimary),
+                            style: AppType.tabular(AppType.bodySmall).copyWith(color: AppColors.onPrimary),
                           ),
                         ),
                       ],
                     ],
                   ),
                   const Spacer(),
-                  Text(formatPeso(product.sellingPrice), style: AppType.tabular(AppType.headingMd)),
+                  Text(formatPeso(product.sellingPrice), style: AppType.tabular(AppType.subhead)),
                   const SizedBox(height: AppSpace.xs),
                   if (out || product.status == StockStatus.low)
                     StockBadge(status: product.status)
                   else
-                    Text(s.stockCount(product.stock), style: AppType.micro),
+                    Text(s.stockCount(product.stock), style: AppType.caption),
                 ],
               ),
             ),

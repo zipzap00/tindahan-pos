@@ -181,6 +181,10 @@ abstract class Strings {
   String get inventoryValueTitle;
   String get itemsInSale;
   String get languageTitle;
+  String get appearanceTitle;
+  String get appearanceSystem;
+  String get appearanceLight;
+  String get appearanceDark;
   String get lastSevenDays;
   String get loading;
   String get lowStock;

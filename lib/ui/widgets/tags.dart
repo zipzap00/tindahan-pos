@@ -5,23 +5,23 @@ import '../../core/theme/tokens.dart';
 import '../../data/models/product.dart';
 
 enum TagTone {
-  /// pill-tag-mint: good state (in stock, paid).
-  mint,
+  /// On track: in stock, paid, completed.
+  success,
 
-  /// pill-tag-shade: neutral or needs attention (low stock, refunded).
-  shade,
+  /// At risk: low stock.
+  warning,
 
-  /// Inverse ink pill: strongest state (out of stock, cancelled).
-  ink,
+  /// Over budget: out of stock, cancelled. Keep it rare.
+  error,
 
-  /// White pill with hairline: plain information.
-  outline,
+  /// Plain information: category, archived, refunded.
+  neutral,
 }
 
-/// Small status pill. Never tappable. Always words plus an icon, never colour
-/// alone.
+/// Small status chip. Never tappable. A status always has words and an icon,
+/// never colour alone.
 class TagPill extends StatelessWidget {
-  const TagPill({super.key, required this.label, this.tone = TagTone.shade, this.icon});
+  const TagPill({super.key, required this.label, this.tone = TagTone.neutral, this.icon});
 
   final String label;
   final TagTone tone;
@@ -29,19 +29,19 @@ class TagPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (Color background, Color foreground, Border? border) = switch (tone) {
-      TagTone.mint => (AppColors.aloe10, AppColors.ink, null),
-      TagTone.shade => (AppColors.shade30, AppColors.ink, null),
-      TagTone.ink => (AppColors.ink, AppColors.onPrimary, null),
-      TagTone.outline => (AppColors.canvasLight, AppColors.ink, Border.all(color: AppColors.hairlineLight)),
+    final (Color background, Color foreground, Color border) = switch (tone) {
+      TagTone.success => (AppColors.primaryTint, AppColors.primaryDark, AppColors.primaryBorder),
+      TagTone.warning => (AppColors.warningTint, AppColors.warningText, AppColors.warningBorder),
+      TagTone.error => (AppColors.errorTint, AppColors.errorDark, AppColors.errorBorder),
+      TagTone.neutral => (AppColors.surfaceMuted, AppColors.stoneDark, AppColors.hairline),
     };
     final tagIcon = icon;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpace.md, vertical: AppSpace.xs),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpace.sm, vertical: AppSpace.xs),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: border,
+        borderRadius: AppRadius.chip,
+        border: Border.all(color: border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -50,7 +50,7 @@ class TagPill extends StatelessWidget {
             Icon(tagIcon, size: 14, color: foreground),
             const SizedBox(width: AppSpace.xs),
           ],
-          Text(label.toUpperCase(), style: AppType.eyebrowCap.copyWith(color: foreground)),
+          Text(label, style: AppType.caption.copyWith(color: foreground)),
         ],
       ),
     );
@@ -67,11 +67,11 @@ class StockBadge extends StatelessWidget {
     final s = context.s;
     return switch (status) {
       StockStatus.inStock =>
-        TagPill(label: s.stockStatusLabel(status), tone: TagTone.mint, icon: Icons.check_rounded),
+        TagPill(label: s.stockStatusLabel(status), tone: TagTone.success, icon: Icons.check_rounded),
       StockStatus.low =>
-        TagPill(label: s.stockStatusLabel(status), tone: TagTone.shade, icon: Icons.trending_down_rounded),
+        TagPill(label: s.stockStatusLabel(status), tone: TagTone.warning, icon: Icons.trending_down_rounded),
       StockStatus.out =>
-        TagPill(label: s.stockStatusLabel(status), tone: TagTone.ink, icon: Icons.block_rounded),
+        TagPill(label: s.stockStatusLabel(status), tone: TagTone.error, icon: Icons.block_rounded),
     };
   }
 }

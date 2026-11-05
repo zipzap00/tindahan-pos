@@ -3,9 +3,9 @@
     "short_name": "Tindahan",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#FBFBF5",
-    "theme_color": "#000000",
-    "description": "A new Flutter project.",
+    "background_color": "#FAFFFE",
+    "theme_color": "#FAFFFE",
+    "description": "Sales, stock and utang for your sari-sari store.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

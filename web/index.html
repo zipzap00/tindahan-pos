@@ -18,22 +18,65 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Sales, stock and utang for your sari-sari store.">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#FAFFFE">
   <meta name="apple-mobile-web-app-title" content="Tindahan">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" href="icons/Icon-maskable-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
   <title>Tindahan</title>
   <link rel="manifest" href="manifest.json">
-  <style>html, body { background: #FBFBF5; }</style>
+  <!--
+    Shown while Flutter downloads. It is the closed store from the loading
+    screen (lib/ui/screens/auth/status_screens.dart), in the same place and at
+    the same size, so the awning unrolling reads as one continuous animation.
+    The numbers mirror SplashScreen; colours are AppColors tokens.
+  -->
+  <style>
+    html, body { margin: 0; height: 100%; background: #FAFFFE; }
+    #boot { position: fixed; inset: 0; }
+    #boot svg { position: absolute; left: 50%; top: 50%; width: 132.2px; height: 120px; transform: translate(-50%, -50%); }
+    #boot .bar {
+      position: absolute; left: 50%; top: calc(50% + 128px); width: 144px; height: 4px; margin-left: -72px;
+      background: #E7E5E4; border-radius: 9999px; overflow: hidden;
+    }
+    #boot .bar::after {
+      content: ""; position: absolute; top: 0; bottom: 0; width: 40%; background: #10B981; border-radius: 9999px;
+      animation: boot-slide 1.4s ease-in-out infinite;
+    }
+    @keyframes boot-slide { from { left: -40%; } to { left: 100%; } }
+    @media (prefers-reduced-motion: reduce) { #boot .bar::after { animation: none; left: 30%; } }
+    @media (prefers-color-scheme: dark) { html, body { background: #1C1917; } #boot .bar { background: #44403C; } }
+  </style>
 </head>
 <body>
+  <div id="boot" role="status" aria-label="Tindahan">
+    <svg viewBox="0 0 260 236" aria-hidden="true">
+      <rect x="26" y="76" width="208" height="160" rx="26" fill="#059669"/>
+      <g fill="#D6D3D1">
+        <path d="M30 14H70L55 92A25 25 0 0 1 5 92Z"/>
+        <path d="M70 14H110L105 92A25 25 0 0 1 55 92Z"/>
+        <path d="M110 14H150L155 92A25 25 0 0 1 105 92Z"/>
+        <path d="M150 14H190L205 92A25 25 0 0 1 155 92Z"/>
+        <path d="M190 14H230L255 92A25 25 0 0 1 205 92Z"/>
+      </g>
+      <rect x="20" y="0" width="220" height="24" rx="12" fill="#059669"/>
+      <circle cx="130" cy="170" r="44" fill="#10B981"/>
+    </svg>
+    <div class="bar"></div>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var boot = document.getElementById('boot');
+      if (boot) boot.remove();
+    }, { once: true });
+  </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader

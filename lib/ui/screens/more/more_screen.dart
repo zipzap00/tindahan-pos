@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/l10n/language.dart';
+import '../../../core/theme/appearance.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../data/models/records.dart';
 import '../../scopes.dart';
+import '../../widgets/brand.dart';
 import '../../widgets/cards.dart';
 import '../../widgets/dialogs.dart';
 import '../../widgets/inputs.dart';
@@ -41,6 +43,7 @@ class MoreScreen extends StatelessWidget {
     final s = context.s;
     final session = StoreScope.of(context);
     final language = LanguageScope.of(context);
+    final appearance = AppearanceScope.of(context);
     return ValueListenableBuilder<Member>(
       valueListenable: session.member,
       builder: (context, member, _) {
@@ -65,14 +68,14 @@ class MoreScreen extends StatelessWidget {
                     ListCard(
                       children: [
                         ListRow(
-                          leading: const Icon(Icons.manage_accounts_outlined),
+                          leading: const IconChip(icon: Icons.manage_accounts_outlined, size: 36),
                           title: s.accountTitle,
                           subtitle: member.email.isEmpty ? s.accountCaption : member.email,
                           trailing: const Icon(Icons.chevron_right_rounded),
                           onTap: () => _push(context, const AccountScreen()),
                         ),
                         ListRow(
-                          leading: const Icon(Icons.receipt_long_outlined),
+                          leading: const IconChip(icon: Icons.receipt_long_outlined, size: 36),
                           title: s.salesHistoryTitle,
                           subtitle: s.salesHistoryCaption,
                           trailing: const Icon(Icons.chevron_right_rounded),
@@ -80,28 +83,28 @@ class MoreScreen extends StatelessWidget {
                         ),
                         if (isOwner) ...[
                           ListRow(
-                            leading: const Icon(Icons.account_balance_wallet_outlined),
+                            leading: const IconChip(icon: Icons.account_balance_wallet_outlined, size: 36),
                             title: s.expensesTitle,
                             subtitle: s.expensesCaption,
                             trailing: const Icon(Icons.chevron_right_rounded),
                             onTap: () => _push(context, const ExpensesScreen()),
                           ),
                           ListRow(
-                            leading: const Icon(Icons.history_rounded),
+                            leading: const IconChip(icon: Icons.history_rounded, size: 36),
                             title: s.stockMovementsTitle,
                             subtitle: s.stockMovementsCaption,
                             trailing: const Icon(Icons.chevron_right_rounded),
                             onTap: () => _push(context, const MovementsScreen()),
                           ),
                           ListRow(
-                            leading: const Icon(Icons.group_outlined),
+                            leading: const IconChip(icon: Icons.group_outlined, size: 36),
                             title: s.staffTitle,
                             subtitle: s.staffCaption,
                             trailing: const Icon(Icons.chevron_right_rounded),
                             onTap: () => _push(context, const StaffScreen()),
                           ),
                           ListRow(
-                            leading: const Icon(Icons.fact_check_outlined),
+                            leading: const IconChip(icon: Icons.fact_check_outlined, size: 36),
                             title: s.auditTitle,
                             subtitle: s.auditCaption,
                             trailing: const Icon(Icons.chevron_right_rounded),
@@ -117,14 +120,32 @@ class MoreScreen extends StatelessWidget {
                       labelOf: (value) => value == AppLanguage.fil ? 'Filipino' : 'English',
                       onSelected: language.setLanguage,
                     ),
+                    SectionHeader(title: s.appearanceTitle),
+                    SegmentedPills<ThemeMode>(
+                      options: const [ThemeMode.system, ThemeMode.light, ThemeMode.dark],
+                      selected: appearance.mode,
+                      labelOf: (mode) => switch (mode) {
+                        ThemeMode.system => s.appearanceSystem,
+                        ThemeMode.light => s.appearanceLight,
+                        ThemeMode.dark => s.appearanceDark,
+                      },
+                      iconOf: (mode) => switch (mode) {
+                        ThemeMode.system => Icons.brightness_auto_outlined,
+                        ThemeMode.light => Icons.light_mode_outlined,
+                        ThemeMode.dark => Icons.dark_mode_outlined,
+                      },
+                      onSelected: appearance.setMode,
+                    ),
                     SectionHeader(title: s.aboutTitle),
                     AppCard(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(s.aboutBody, style: AppType.bodyMd),
+                          const AppLogo(height: 28),
+                          const SizedBox(height: AppSpace.md),
+                          Text(s.aboutBody, style: AppType.body),
                           const SizedBox(height: AppSpace.sm),
-                          Text(s.timeZoneNote, style: AppType.micro),
+                          Text(s.timeZoneNote, style: AppType.caption),
                         ],
                       ),
                     ),

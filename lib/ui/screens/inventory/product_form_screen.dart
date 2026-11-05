@@ -150,7 +150,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(s.productDetailsSection, style: AppType.headingSm),
+                  Text(s.productDetailsSection, style: AppType.subhead),
                   const SizedBox(height: AppSpace.lg),
                   AppTextField(
                     label: s.productName,
@@ -210,7 +210,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(_isEdit ? s.priceSection : s.priceAndStockSection, style: AppType.headingSm),
+                  Text(_isEdit ? s.priceSection : s.priceAndStockSection, style: AppType.subhead),
                   const SizedBox(height: AppSpace.lg),
                   if (!_isEdit) ...[
                     QuantityField(
@@ -244,7 +244,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     const SizedBox(height: AppSpace.lg),
                   ] else ...[
                     StatRow(label: s.currentStock, value: '${existing?.stock ?? 0}'),
-                    Text(s.stockChangesHint, style: AppType.micro),
+                    Text(s.stockChangesHint, style: AppType.caption),
                     const SizedBox(height: AppSpace.lg),
                   ],
                   PesoField(
@@ -279,9 +279,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(s.calculationTitle, style: AppType.headingSm),
+                  Text(s.calculationTitle, style: AppType.subhead),
                   const SizedBox(height: AppSpace.xs),
-                  Text(s.calculationCaption(preview.quantity), style: AppType.micro),
+                  Text(s.calculationCaption(preview.quantity), style: AppType.caption),
                   const SizedBox(height: AppSpace.md),
                   StatRow(label: s.costPerPiece, value: formatPeso(preview.unitCost)),
                   StatRow(label: s.capitalLabel, value: formatPeso(preview.capital)),
@@ -295,7 +295,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   ),
                   if (preview.sellsBelowCost && preview.sellingPrice > 0) ...[
                     const SizedBox(height: AppSpace.md),
-                    InlineNotice(icon: Icons.warning_amber_rounded, message: s.priceBelowCost),
+                    InlineNotice(icon: Icons.warning_amber_rounded, tone: NoticeTone.warning, message: s.priceBelowCost),
                   ],
                 ],
               ),

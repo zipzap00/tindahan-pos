@@ -57,7 +57,7 @@ class _CustomerPickerState extends State<_CustomerPicker> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(AppSpace.xl, 0, AppSpace.xl, AppSpace.md),
-                child: Text(s.chooseCustomer, style: AppType.headingLg),
+                child: Text(s.chooseCustomer, style: AppType.subhead),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpace.xl),
@@ -83,7 +83,7 @@ class _CustomerPickerState extends State<_CustomerPicker> {
                 child: customers.isEmpty
                     ? Padding(
                         padding: const EdgeInsets.all(AppSpace.xl),
-                        child: Text(s.noCustomersFound, style: AppType.caption, textAlign: TextAlign.center),
+                        child: Text(s.noCustomersFound, style: AppType.bodySmall, textAlign: TextAlign.center),
                       )
                     : ListView.builder(
                         shrinkWrap: true,
@@ -181,7 +181,7 @@ class _CustomerFormState extends State<_CustomerForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(widget.existing == null ? s.addCustomer : s.editCustomer, style: AppType.headingLg),
+            Text(widget.existing == null ? s.addCustomer : s.editCustomer, style: AppType.subhead),
             const SizedBox(height: AppSpace.lg),
             AppTextField(
               label: s.customerName,

@@ -50,10 +50,12 @@ When two files disagree: `DESIGN.md` wins on visual properties, `firestore.rules
 
 ### UI
 - Use the tokens in `lib/core/theme/tokens.dart` and the shared widgets in `lib/ui/widgets/`. Never hard-code a colour, radius, font size or shadow in a screen.
-- `DESIGN.md` has no red or amber. Status is shown with an icon **and** a word, on aloe, shade or ink pills.
+- `AppColors` and `AppType` follow the light or dark palette: read them in `build`, never keep one in a `static` or a field, and check new screens in both. See Dark Mode in `ui-mapping.md`.
+- Status is shown with an icon **and** a word, on the DESIGN.md status chips (`TagPill`, `InlineNotice`). Red is for failed or blocked things only: no red-heavy screens.
 - Every user-facing string goes in the translation generator (`Strings`, `FilStrings`, `EnStrings`) and is read with `context.s`. English is the default; Taglish (Filipino) is the alternative.
 - Every screen handles loading, empty and error states with the widgets in `states.dart`.
 - Touch targets are at least 48 px (`AppSpace.minTouch`).
+- The logo is drawn by the painters in `lib/ui/widgets/brand.dart`, not shipped as an image. Never hand-edit an app icon or launch image: change the painter and regenerate.
 
 ## Repository Map
 
@@ -62,7 +64,8 @@ lib/core/        money, manila_time, result, log, theme/, l10n/
 lib/data/        models/, repositories/, session_controller, store_session, live_query, firestore_*
 lib/domain/      pricing, cart, inventory, dashboard_summary, csv_export (pure Dart, tested)
 lib/ui/          scopes, shell/, widgets/, screens/<area>/
-test/            unit tests for core and domain
+test/            unit tests for core and domain, widget tests for brand and start-up
+tool/            generate_brand_assets (app icons and launch images from the logo painters)
 firestore.rules, firestore.indexes.json, firebase.json
 ```
 
@@ -75,6 +78,7 @@ flutter test
 flutter run
 firebase emulators:start --only firestore,auth   # test rules locally
 firebase deploy --only firestore                 # rules + indexes
+flutter test tool/generate_brand_assets.dart      # after changing the logo painters
 ```
 
 ## When Unsure

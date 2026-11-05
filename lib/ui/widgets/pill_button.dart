@@ -2,23 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/tokens.dart';
 
-/// DESIGN.md button vocabulary. Every button is a pill; variants differ only
-/// in fill, border and canvas.
+/// DESIGN.md button vocabulary. The name is historic: every button is the
+/// Large size, 48 px high with a 12 px radius, which also meets the touch target.
 enum PillVariant {
-  /// button-primary-pill: black fill, white label. One per screen.
+  /// Primary: mint fill, white label. One per screen.
   primary,
 
-  /// button-outline-on-light: white fill, 1 px ink border.
+  /// Secondary: no fill, mint label, 1.5 px mint border.
   outline,
 
-  /// button-aloe-pill: mint fill for a featured action.
-  aloe,
-
-  /// Text-only pill for low-emphasis actions (cancel, see all).
+  /// Ghost: no fill, stone label, for low-emphasis actions (cancel, see all).
   ghost,
 
-  /// button-outline-on-dark: 2 px white border on the night canvas.
-  outlineOnDark,
+  /// Destructive: red fill, white label. Only to confirm losing something.
+  destructive,
 }
 
 class PillButton extends StatelessWidget {
@@ -59,74 +56,63 @@ class PillButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null && !loading;
+    final disabled = onPressed == null && !loading;
 
     Color background(Set<WidgetState> states) {
-      final disabled = states.contains(WidgetState.disabled);
       final pressed = states.contains(WidgetState.pressed);
       return switch (variant) {
         PillVariant.primary =>
-          disabled && !loading ? AppColors.shade30 : (pressed ? AppColors.shade70 : AppColors.primary),
-        PillVariant.outline => pressed ? AppColors.canvasCream : AppColors.canvasLight,
-        PillVariant.aloe => pressed ? AppColors.pistachio10 : AppColors.aloe10,
-        PillVariant.ghost => pressed ? AppColors.hairlineLight : Colors.transparent,
-        PillVariant.outlineOnDark => pressed ? AppColors.canvasNightElevated : AppColors.canvasNight,
+          disabled ? AppColors.warmGray : (pressed ? AppColors.primaryDark : AppColors.primary),
+        PillVariant.destructive =>
+          disabled ? AppColors.warmGray : (pressed ? AppColors.errorDark : AppColors.error),
+        PillVariant.outline => pressed ? AppColors.primaryTint : Colors.transparent,
+        PillVariant.ghost => pressed ? AppColors.surfaceMuted : Colors.transparent,
       };
     }
 
-    Color foreground(Set<WidgetState> states) {
-      final disabled = states.contains(WidgetState.disabled) && !loading;
-      return switch (variant) {
-        PillVariant.primary => disabled ? AppColors.shade60 : AppColors.onPrimary,
-        PillVariant.outlineOnDark => disabled ? AppColors.shade50 : AppColors.onDark,
-        _ => disabled ? AppColors.shade50 : AppColors.ink,
-      };
-    }
+    final Color foreground = switch (variant) {
+      PillVariant.primary || PillVariant.destructive => AppColors.onPrimary,
+      PillVariant.outline => disabled ? AppColors.stone : AppColors.primaryDark,
+      PillVariant.ghost => AppColors.stoneDark,
+    };
 
-    BorderSide side(Set<WidgetState> states) {
-      final disabled = states.contains(WidgetState.disabled) && !loading;
-      return switch (variant) {
-        PillVariant.outline =>
-          BorderSide(color: disabled ? AppColors.shade30 : AppColors.ink),
-        PillVariant.outlineOnDark =>
-          BorderSide(color: disabled ? AppColors.shade60 : AppColors.onDark, width: 2),
-        _ => BorderSide.none,
-      };
-    }
+    final BorderSide side = variant == PillVariant.outline
+        ? BorderSide(color: disabled ? AppColors.warmGray : AppColors.primary, width: 1.5)
+        : BorderSide.none;
 
     final style = ButtonStyle(
       backgroundColor: WidgetStateProperty.resolveWith(background),
-      foregroundColor: WidgetStateProperty.resolveWith(foreground),
+      foregroundColor: WidgetStatePropertyAll(foreground),
       overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-      side: WidgetStateProperty.resolveWith(side),
-      shape: const WidgetStatePropertyAll(StadiumBorder()),
+      side: WidgetStatePropertyAll(side),
+      shape: const WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: AppRadius.button)),
       minimumSize: WidgetStatePropertyAll(Size(expand ? double.infinity : 48, AppSpace.minTouch)),
       padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: AppSpace.xl, vertical: AppSpace.md),
       ),
-      textStyle: WidgetStatePropertyAll(AppType.bodyStrong),
+      textStyle: WidgetStatePropertyAll(AppType.button),
       tapTargetSize: MaterialTapTargetSize.padded,
       elevation: const WidgetStatePropertyAll(0),
     );
-
-    final Color spinnerColor = variant == PillVariant.primary || variant == PillVariant.outlineOnDark
-        ? AppColors.onPrimary
-        : AppColors.ink;
 
     final Widget content = loading
         ? SizedBox(
             width: 20,
             height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2, color: spinnerColor),
+            child: CircularProgressIndicator(strokeWidth: 2, color: foreground),
           )
         : _label();
 
     return Semantics(
       button: true,
       enabled: enabled,
-      child: TextButton(
-        style: style,
-        onPressed: enabled ? onPressed : (loading ? () {} : null),
-        child: content,
+      child: Opacity(
+        opacity: disabled ? 0.5 : 1,
+        child: TextButton(
+          style: style,
+          onPressed: enabled ? onPressed : (loading ? () {} : null),
+          child: content,
+        ),
       ),
     );
   }

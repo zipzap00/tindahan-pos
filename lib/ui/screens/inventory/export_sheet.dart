@@ -90,9 +90,9 @@ class _ExportSheetState extends State<_ExportSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(s.exportTitle, style: AppType.headingLg),
+          Text(s.exportTitle, style: AppType.subhead),
           const SizedBox(height: AppSpace.xs),
-          Text(s.exportCaption, style: AppType.caption),
+          Text(s.exportCaption, style: AppType.bodySmall),
           const SizedBox(height: AppSpace.lg),
           if (_busy)
             const Padding(padding: EdgeInsets.all(AppSpace.xl), child: CenteredLoader())

@@ -31,16 +31,16 @@ class ReceiptScreen extends StatelessWidget {
             child: Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(color: AppColors.aloe10, shape: BoxShape.circle),
-              child: const Icon(Icons.check_rounded, size: 40),
+              decoration: const BoxDecoration(color: AppColors.primaryTint, shape: BoxShape.circle),
+              child: Icon(Icons.check_rounded, size: 40, color: AppColors.primaryDark),
             ),
           ),
           const SizedBox(height: AppSpace.lg),
-          Text(s.saleComplete, style: AppType.headingXl, textAlign: TextAlign.center),
+          Text(s.saleComplete, style: AppType.headline, textAlign: TextAlign.center),
           const SizedBox(height: AppSpace.xs),
           Text(
             '${s.receiptNo(sale.receiptNo)} · $when',
-            style: AppType.caption,
+            style: AppType.bodySmall,
             textAlign: TextAlign.center,
           ),
           if (!outcome.synced) ...[

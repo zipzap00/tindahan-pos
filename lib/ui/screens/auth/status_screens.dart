@@ -9,24 +9,123 @@ import '../../widgets/layout.dart';
 import '../../widgets/pill_button.dart';
 import '../../widgets/states.dart';
 
-/// Start-up loading screen: logo, spinner and "Opening the store…", on the
-/// same cream canvas as the rest of the app.
-class SplashScreen extends StatelessWidget {
+/// Start-up loading screen. The store opens: the awning unrolls stripe by
+/// stripe, the lights come on, then the name appears.
+///
+/// It starts from the closed store that the Android and iOS launch images and
+/// web/index.html show, with the mark dead centre and at the same size, so the
+/// hand-over from the platform to Flutter is not visible. Keep [markHeight] and
+/// the bar position in step with those (tool/generate_brand_assets.dart and
+/// web/index.html).
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  static const double markHeight = 120;
+  static const double _barWidth = 144;
+  static const double _barHeight = 4;
+
+  /// Shorter than [AuthGate.minSplash], so the opening always finishes.
+  static const Duration openingDuration = Duration(milliseconds: 1300);
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late final AnimationController _opening =
+      AnimationController(vsync: this, duration: SplashScreen.openingDuration);
+  late final Animation<double> _awning =
+      CurvedAnimation(parent: _opening, curve: const Interval(0.05, 0.62, curve: Curves.easeInOut));
+  late final Animation<double> _lights =
+      CurvedAnimation(parent: _opening, curve: const Interval(0.55, 0.78, curve: Curves.easeOut));
+  late final Animation<double> _name =
+      CurvedAnimation(parent: _opening, curve: const Interval(0.6, 0.92, curve: Curves.easeOut));
+  late final Animation<Offset> _nameRise =
+      Tween<Offset>(begin: const Offset(0, 0.4), end: Offset.zero).animate(_name);
+  bool _started = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _opening.value = 1;
+    } else {
+      _opening.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _opening.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
+    // Equal space above and below keeps the mark exactly centred.
+    const belowMark = SplashScreen.markHeight;
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpace.xl),
+      body: Center(
+        child: Semantics(
+          liveRegion: true,
+          label: s.openingStore,
+          child: ExcludeSemantics(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const AppLogo(height: 48),
-                const SizedBox(height: AppSpace.xxl),
-                CenteredLoader(message: context.s.openingStore),
+                const SizedBox(height: belowMark),
+                RepaintBoundary(
+                  child: AnimatedBuilder(
+                    animation: _opening,
+                    builder: (context, _) => AppLogoMark(
+                      height: SplashScreen.markHeight,
+                      awning: _awning.value,
+                      lights: _lights.value,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: belowMark,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: AppSpace.xl),
+                      SizedBox(
+                        height: AppSpace.xl,
+                        child: FadeTransition(
+                          opacity: _name,
+                          child: SlideTransition(position: _nameRise, child: const AppWordmark(height: AppSpace.xl)),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpace.lg + AppSpace.xs),
+                      Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.topCenter,
+                        children: [
+                          SizedBox(
+                            width: SplashScreen._barWidth,
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.all(Radius.circular(AppRadius.pill)),
+                              child: LinearProgressIndicator(
+                                minHeight: SplashScreen._barHeight,
+                                backgroundColor: AppColors.hairline,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: SplashScreen._barHeight + AppSpace.md,
+                            child: FadeTransition(
+                              opacity: _name,
+                              child: Text(s.openingStore, style: AppType.bodySmall, maxLines: 1),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -48,7 +147,7 @@ class AccessDisabledScreen extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: AppSpace.xl),
           children: [
             PageHeader(title: s.accessDisabledTitle),
-            PagePadding(child: Text(s.accessDisabledBody, style: AppType.bodyMd)),
+            PagePadding(child: Text(s.accessDisabledBody, style: AppType.body)),
             const SizedBox(height: AppSpace.xl),
             PagePadding(
               child: PillButton(
@@ -116,15 +215,15 @@ class SetupNeededScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(notConfigured ? s.setupNeededBody : s.startupFailedBody, style: AppType.bodyMd),
+                  Text(notConfigured ? s.setupNeededBody : s.startupFailedBody, style: AppType.body),
                   const SizedBox(height: AppSpace.lg),
                   if (notConfigured)
                     Container(
                       padding: const EdgeInsets.all(AppSpace.lg),
-                      decoration: const BoxDecoration(color: AppColors.canvasNight, borderRadius: AppRadius.input),
+                      decoration: BoxDecoration(color: AppColors.ink, borderRadius: AppRadius.input),
                       child: Text(
                         'dart pub global activate flutterfire_cli\nflutterfire configure',
-                        style: AppType.bodyMd.copyWith(color: AppColors.onDark, fontFamily: 'monospace'),
+                        style: AppType.code.copyWith(color: AppColors.onInk),
                       ),
                     ),
                 ],

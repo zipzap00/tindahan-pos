@@ -120,7 +120,7 @@ class MovementRow extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(change, style: AppType.tabular(AppType.bodyStrong)),
-          Text(s.stockNow(movement.stockAfter), style: AppType.micro),
+          Text(s.stockNow(movement.stockAfter), style: AppType.caption),
         ],
       ),
     );

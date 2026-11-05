@@ -518,6 +518,18 @@ class EnStrings extends Strings {
   String get languageTitle => 'Language';
 
   @override
+  String get appearanceTitle => 'Appearance';
+
+  @override
+  String get appearanceSystem => 'System';
+
+  @override
+  String get appearanceLight => 'Light';
+
+  @override
+  String get appearanceDark => 'Dark';
+
+  @override
   String get lastSevenDays => 'Sales, last 7 days';
 
   @override

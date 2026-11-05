@@ -28,13 +28,12 @@ class EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = actionLabel;
     return AppCard(
-      tone: CardTone.band,
       padding: const EdgeInsets.symmetric(horizontal: AppSpace.xl, vertical: AppSpace.xxl),
       child: Column(
         children: [
-          Icon(icon, size: 40),
-          const SizedBox(height: AppSpace.md),
-          Text(message, style: AppType.bodyMd, textAlign: TextAlign.center),
+          IconChip(icon: icon, size: AppSpace.huge),
+          const SizedBox(height: AppSpace.lg),
+          Text(message, style: AppType.body, textAlign: TextAlign.center),
           if (label != null && onAction != null) ...[
             const SizedBox(height: AppSpace.lg),
             PillButton(label: label, onPressed: onAction, variant: PillVariant.outline),
@@ -58,9 +57,9 @@ class ErrorCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 28),
+          const Icon(Icons.error_outline_rounded, size: 28, color: AppColors.error),
           const SizedBox(height: AppSpace.sm),
-          Text(describeError(s, error), style: AppType.bodyMd),
+          Text(describeError(s, error), style: AppType.body),
           if (onRetry != null) ...[
             const SizedBox(height: AppSpace.lg),
             PillButton(label: s.retry, onPressed: onRetry, variant: PillVariant.outline, icon: Icons.refresh_rounded),
@@ -71,26 +70,56 @@ class ErrorCard extends StatelessWidget {
   }
 }
 
-/// Grey blocks shaped like the content that is loading.
-class LoadingBlocks extends StatelessWidget {
+/// Grey blocks shaped like the content that is loading. They pulse gently so
+/// a slow connection does not look like a frozen screen.
+class LoadingBlocks extends StatefulWidget {
   const LoadingBlocks({super.key, this.count = 4, this.height = 64});
 
   final int count;
   final double height;
 
   @override
+  State<LoadingBlocks> createState() => _LoadingBlocksState();
+}
+
+class _LoadingBlocksState extends State<LoadingBlocks> with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
+  late final Animation<double> _opacity =
+      Tween<double>(begin: 1, end: 0.5).animate(CurvedAnimation(parent: _pulse, curve: Curves.easeInOut));
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _pulse.stop();
+    } else if (!_pulse.isAnimating) {
+      _pulse.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Semantics(
       label: context.s.loading,
-      child: Column(
-        children: [
-          for (var i = 0; i < count; i++)
-            Container(
-              height: height,
-              margin: const EdgeInsets.only(bottom: AppSpace.md),
-              decoration: const BoxDecoration(color: AppColors.hairlineLight, borderRadius: AppRadius.card),
-            ),
-        ],
+      child: FadeTransition(
+        opacity: _opacity,
+        child: Column(
+          children: [
+            for (var i = 0; i < widget.count; i++)
+              Container(
+                height: widget.height,
+                margin: const EdgeInsets.only(bottom: AppSpace.md),
+                decoration: BoxDecoration(color: AppColors.hairline, borderRadius: AppRadius.card),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -111,7 +140,7 @@ class CenteredLoader extends StatelessWidget {
           const CircularProgressIndicator(),
           if (text != null) ...[
             const SizedBox(height: AppSpace.lg),
-            Text(text, style: AppType.caption, textAlign: TextAlign.center),
+            Text(text, style: AppType.bodySmall, textAlign: TextAlign.center),
           ],
         ],
       ),
@@ -119,29 +148,51 @@ class CenteredLoader extends StatelessWidget {
   }
 }
 
-/// Small ink note with an icon, used for warnings (no warning colour exists
-/// in the design system, so the icon and words carry the meaning).
+enum NoticeTone {
+  /// Sky: tips and helpful information.
+  info,
+
+  /// Amber: look at this before going on.
+  warning,
+
+  /// Red: something failed.
+  error,
+}
+
+/// Small tinted note with an icon. The icon and words carry the meaning; the
+/// tone only supports them.
 class InlineNotice extends StatelessWidget {
-  const InlineNotice({super.key, required this.message, this.icon = Icons.info_outline_rounded});
+  const InlineNotice({
+    super.key,
+    required this.message,
+    this.icon = Icons.info_outline_rounded,
+    this.tone = NoticeTone.info,
+  });
 
   final String message;
   final IconData icon;
+  final NoticeTone tone;
 
   @override
   Widget build(BuildContext context) {
+    final (Color fill, Color border, Color iconColor) = switch (tone) {
+      NoticeTone.info => (AppColors.infoTint, AppColors.infoBorder, AppColors.info),
+      NoticeTone.warning => (AppColors.warningTint, AppColors.warningBorder, AppColors.warningText),
+      NoticeTone.error => (AppColors.errorTint, AppColors.errorBorder, AppColors.errorDark),
+    };
     return Container(
       padding: const EdgeInsets.all(AppSpace.md),
       decoration: BoxDecoration(
-        color: AppColors.canvasLight,
-        borderRadius: AppRadius.input,
-        border: Border.all(color: AppColors.ink),
+        color: fill,
+        borderRadius: AppRadius.card,
+        border: Border.all(color: border),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20),
+          Icon(icon, size: 20, color: iconColor),
           const SizedBox(width: AppSpace.sm),
-          Expanded(child: Text(message, style: AppType.bodyMd)),
+          Expanded(child: Text(message, style: AppType.body)),
         ],
       ),
     );

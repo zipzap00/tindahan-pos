@@ -71,6 +71,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       title: s.deleteExpenseTitle,
       message: s.deleteExpenseMessage(formatPeso(expense.amount), s.expenseCategoryLabel(expense.category)),
       confirmLabel: s.delete,
+      destructive: true,
     );
     if (!confirmed || !mounted) return;
     final result = await session.expenses.delete(expense);
@@ -124,10 +125,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(s.expensesThisMonth.toUpperCase(), style: AppType.eyebrowCap),
+                    Text(s.expensesThisMonth.toUpperCase(), style: AppType.overline),
                     const SizedBox(height: AppSpace.sm),
-                    Text(formatPeso(total), style: AppType.tabular(AppType.displayMobile)),
-                    Text(s.expenseNotStock, style: AppType.caption),
+                    Text(formatPeso(total), style: AppType.tabular(AppType.headline)),
+                    Text(s.expenseNotStock, style: AppType.bodySmall),
                   ],
                 ),
               ),
@@ -247,7 +248,7 @@ class _ExpenseSheetState extends State<_ExpenseSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(s.addExpense, style: AppType.headingLg),
+            Text(s.addExpense, style: AppType.subhead),
             const SizedBox(height: AppSpace.lg),
             PesoField(
               label: s.amount,
@@ -259,7 +260,7 @@ class _ExpenseSheetState extends State<_ExpenseSheet> {
               },
             ),
             const SizedBox(height: AppSpace.lg),
-            Text(s.category, style: AppType.caption.copyWith(color: AppColors.ink)),
+            Text(s.category, style: AppType.label),
             const SizedBox(height: AppSpace.sm),
             Wrap(
               spacing: AppSpace.sm,
@@ -274,7 +275,7 @@ class _ExpenseSheetState extends State<_ExpenseSheet> {
               ],
             ),
             const SizedBox(height: AppSpace.lg),
-            Text(s.date, style: AppType.caption.copyWith(color: AppColors.ink)),
+            Text(s.date, style: AppType.label),
             const SizedBox(height: AppSpace.sm),
             Align(
               alignment: Alignment.centerLeft,

@@ -27,14 +27,15 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    # Logo recoloured to the DESIGN.md palette, transparent background.
-    - assets/images/logo.png
   fonts:
-    # Inter 4.1 variable font (SIL OFL, see assets/fonts/Inter-LICENSE.txt).
-    # Body roles use the text optical size; display roles use opsz 32
-    # ("Inter Display"), the open substitute DESIGN.md names for
-    # Neue Haas Grotesk Display.
-    - family: Inter
+    # Variable fonts (SIL OFL, licences in assets/fonts). Each defaults to its
+    # lightest weight, so text styles must set the wght axis; see AppType.
+    - family: Manrope
       fonts:
-        - asset: assets/fonts/InterVariable.ttf
+        - asset: assets/fonts/Manrope-Variable.ttf
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-Variable.ttf
+    - family: SourceCodePro
+      fonts:
+        - asset: assets/fonts/SourceCodePro-Variable.ttf

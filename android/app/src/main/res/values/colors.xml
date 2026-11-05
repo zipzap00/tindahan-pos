@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- AppColors.canvasCream, so the launch screen matches the app. -->
-    <color name="canvas_cream">#FBFBF5</color>
+    <!-- AppColors.background, so the launch screen matches the app. -->
+    <color name="canvas">#FAFFFE</color>
+    <!-- AppColors.primary, the adaptive app icon background. -->
+    <color name="brand_primary">#10B981</color>
 </resources>

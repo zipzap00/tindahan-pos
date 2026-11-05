@@ -88,19 +88,19 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(s.balanceOwed.toUpperCase(), style: AppType.eyebrowCap),
+                    Text(s.balanceOwed.toUpperCase(), style: AppType.overline),
                     const SizedBox(height: AppSpace.sm),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
-                      child: Text(formatPeso(customer.balance), style: AppType.tabular(AppType.displayMd)),
+                      child: Text(formatPeso(customer.balance), style: AppType.tabular(AppType.display)),
                     ),
                     if (customer.balance < 0)
-                      Text(s.storeOwesCustomer(formatPeso(-customer.balance)), style: AppType.bodyMd),
-                    if (customer.phone.isNotEmpty) Text(customer.phone, style: AppType.bodyMd),
+                      Text(s.storeOwesCustomer(formatPeso(-customer.balance)), style: AppType.body),
+                    if (customer.phone.isNotEmpty) Text(customer.phone, style: AppType.body),
                     if (customer.note.isNotEmpty) ...[
                       const SizedBox(height: AppSpace.xs),
-                      Text(customer.note, style: AppType.caption),
+                      Text(customer.note, style: AppType.bodySmall),
                     ],
                   ],
                 ),
@@ -130,8 +130,8 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(s.balanceShort, style: AppType.micro),
-                            Text(formatPeso(entry.balanceAfter), style: AppType.tabular(AppType.caption)),
+                            Text(s.balanceShort, style: AppType.caption),
+                            Text(formatPeso(entry.balanceAfter), style: AppType.tabular(AppType.bodySmall)),
                           ],
                         ),
                         onTap: entry.saleId.isEmpty
@@ -241,9 +241,9 @@ class _AmountSheetState extends State<_AmountSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(widget.isPayment ? s.recordPayment : s.addUtang, style: AppType.headingLg),
+            Text(widget.isPayment ? s.recordPayment : s.addUtang, style: AppType.subhead),
             const SizedBox(height: AppSpace.xs),
-            Text(s.currentBalance(formatPeso(balance)), style: AppType.caption),
+            Text(s.currentBalance(formatPeso(balance)), style: AppType.bodySmall),
             const SizedBox(height: AppSpace.lg),
             PesoField(
               label: widget.isPayment ? s.amountPaid : s.amount,

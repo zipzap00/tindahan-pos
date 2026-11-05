@@ -5,6 +5,9 @@ import '../../core/l10n/language.dart';
 import '../../core/money.dart';
 import '../../core/theme/tokens.dart';
 
+/// Text typed into a field: tighter than body text, so a field stays compact.
+TextStyle get _fieldText => AppType.body.copyWith(height: 1.4);
+
 /// Text field with its label above (never a placeholder-only label).
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -53,8 +56,8 @@ class AppTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppType.caption.copyWith(color: AppColors.ink)),
-        const SizedBox(height: AppSpace.sm),
+        Text(label, style: AppType.label),
+        const SizedBox(height: AppSpace.labelGap),
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
@@ -69,7 +72,7 @@ class AppTextField extends StatelessWidget {
           maxLines: maxLines,
           textCapitalization: textCapitalization,
           autofillHints: autofillHints,
-          style: AppType.bodyMd,
+          style: _fieldText,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: hint,
@@ -217,14 +220,14 @@ class _SearchFieldState extends State<SearchField> {
       onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,
       textInputAction: TextInputAction.search,
-      style: AppType.bodyMd,
+      style: _fieldText,
       decoration: InputDecoration(
         hintText: widget.hint,
-        prefixIcon: const Icon(Icons.search_rounded, color: AppColors.ink),
+        prefixIcon: Icon(Icons.search_rounded, color: AppColors.stone),
         suffixIcon: hasText
             ? IconButton(
                 tooltip: context.s.clearSearch,
-                icon: const Icon(Icons.close_rounded, color: AppColors.ink),
+                icon: Icon(Icons.close_rounded, color: AppColors.stone),
                 onPressed: () {
                   widget.controller.clear();
                   widget.onChanged?.call('');
@@ -236,7 +239,7 @@ class _SearchFieldState extends State<SearchField> {
   }
 }
 
-/// Horizontally scrolling pill chips; one selected at a time.
+/// Horizontally scrolling filter chips; one selected at a time.
 class ChoiceChipRow<T> extends StatelessWidget {
   const ChoiceChipRow({
     super.key,
@@ -274,7 +277,8 @@ class ChoiceChipRow<T> extends StatelessWidget {
   }
 }
 
-/// One selectable pill; selected pills are ink with a check mark.
+/// One filter chip; the selected chip is mint with a check mark. The chip is
+/// small, as DESIGN.md draws it, but the tap area is the full touch target.
 class ChoicePill extends StatelessWidget {
   const ChoicePill({super.key, required this.label, required this.selected, required this.onTap});
 
@@ -287,28 +291,30 @@ class ChoicePill extends StatelessWidget {
     return Semantics(
       selected: selected,
       button: true,
-      child: Material(
-        color: selected ? AppColors.ink : AppColors.canvasLight,
-        shape: StadiumBorder(
-          side: BorderSide(color: selected ? AppColors.ink : AppColors.hairlineLight),
-        ),
-        child: InkWell(
-          customBorder: const StadiumBorder(),
-          onTap: onTap,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 44),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpace.lg, vertical: AppSpace.sm + 2),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: AppSpace.minTouch),
+          child: Center(
+            widthFactor: 1,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpace.md, vertical: AppSpace.labelGap),
+              decoration: BoxDecoration(
+                color: selected ? AppColors.primaryTint : AppColors.surfaceMuted,
+                borderRadius: AppRadius.chip,
+                border: Border.all(color: selected ? AppColors.primary : AppColors.hairline),
+              ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (selected) ...[
-                    const Icon(Icons.check_rounded, size: 16, color: AppColors.onPrimary),
+                    Icon(Icons.check_rounded, size: 16, color: AppColors.primaryDark),
                     const SizedBox(width: AppSpace.xs),
                   ],
                   Text(
                     label,
-                    style: AppType.caption.copyWith(color: selected ? AppColors.onPrimary : AppColors.ink),
+                    style: selected ? AppType.chip.copyWith(color: AppColors.primaryDark) : AppType.chip,
                   ),
                 ],
               ),
@@ -320,7 +326,7 @@ class ChoicePill extends StatelessWidget {
   }
 }
 
-/// Two or three equal options in one pill track.
+/// Two or three equal options in one track.
 class SegmentedPills<T> extends StatelessWidget {
   const SegmentedPills({
     super.key,
@@ -343,9 +349,9 @@ class SegmentedPills<T> extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpace.xs),
       decoration: BoxDecoration(
-        color: AppColors.canvasLight,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: Border.all(color: AppColors.hairlineLight),
+        color: AppColors.surfaceMuted,
+        borderRadius: AppRadius.button,
+        border: Border.all(color: AppColors.hairline),
       ),
       child: Row(
         children: [
@@ -355,10 +361,10 @@ class SegmentedPills<T> extends StatelessWidget {
                 selected: option == selected,
                 button: true,
                 child: Material(
-                  color: option == selected ? AppColors.ink : Colors.transparent,
-                  shape: const StadiumBorder(),
+                  color: option == selected ? AppColors.surface : Colors.transparent,
+                  shape: const RoundedRectangleBorder(borderRadius: AppRadius.inner),
                   child: InkWell(
-                    customBorder: const StadiumBorder(),
+                    customBorder: const RoundedRectangleBorder(borderRadius: AppRadius.inner),
                     onTap: () => onSelected(option),
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(minHeight: 44),
@@ -372,7 +378,7 @@ class SegmentedPills<T> extends StatelessWidget {
                                 Icon(
                                   icons(option),
                                   size: 18,
-                                  color: option == selected ? AppColors.onPrimary : AppColors.ink,
+                                  color: option == selected ? AppColors.primaryDark : AppColors.stoneDark,
                                 ),
                                 const SizedBox(width: AppSpace.xs),
                               ],
@@ -381,7 +387,7 @@ class SegmentedPills<T> extends StatelessWidget {
                                   labelOf(option),
                                   textAlign: TextAlign.center,
                                   style: AppType.bodyStrong.copyWith(
-                                    color: option == selected ? AppColors.onPrimary : AppColors.ink,
+                                    color: option == selected ? AppColors.primaryDark : AppColors.stoneDark,
                                   ),
                                 ),
                               ),
@@ -454,10 +460,10 @@ class _StepButton extends StatelessWidget {
       icon: Icon(icon, size: 20),
       style: IconButton.styleFrom(
         minimumSize: const Size(44, 44),
-        foregroundColor: AppColors.ink,
-        disabledForegroundColor: AppColors.shade40,
-        side: BorderSide(color: enabled ? AppColors.ink : AppColors.shade30),
-        shape: const CircleBorder(),
+        foregroundColor: AppColors.primaryDark,
+        disabledForegroundColor: AppColors.warmGray,
+        side: BorderSide(color: enabled ? AppColors.inputBorder : AppColors.hairline, width: 1.5),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.button),
       ),
     );
   }

@@ -1,46 +1,155 @@
-// Design tokens. Every value comes from DESIGN.md (transactional light track
-// on every screen; the night tokens remain for reference). Widgets never
-// use raw colours, sizes or radii; they read these constants.
+// Design tokens. Light values come from DESIGN.md (BudgetZen). DESIGN.md has no
+// dark theme, so the dark palette is built from the same families: the stone
+// greys it already uses, and lighter steps of mint, amber and red for text on
+// tints. Widgets never use raw colours, sizes or radii; they read these tokens.
+
+import 'dart:ui' show Brightness;
 
 import 'package:flutter/painting.dart';
 
-/// DESIGN.md `colors`.
-abstract final class AppColors {
-  static const Color primary = Color(0xFF000000);
-  static const Color ink = Color(0xFF000000);
-  static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color onDark = Color(0xFFFFFFFF);
+/// One complete set of the colours that differ between light and dark. See
+/// [AppColors] for what each one is for.
+class AppPalette {
+  const AppPalette({
+    required this.primaryDark,
+    required this.warningText,
+    required this.errorDark,
+    required this.background,
+    required this.surface,
+    required this.surfaceMuted,
+    required this.ink,
+    required this.onInk,
+    required this.warmGray,
+    required this.stone,
+    required this.stoneDark,
+    required this.hairline,
+    required this.inputBorder,
+  });
 
-  static const Color canvasNight = Color(0xFF000000);
-  static const Color canvasNightElevated = Color(0xFF0A0A0A);
-  static const Color canvasLight = Color(0xFFFFFFFF);
-  static const Color canvasCream = Color(0xFFFBFBF5);
-  static const Color surfaceElevatedDark = Color(0xFF1E2C31);
+  static const AppPalette light = AppPalette(
+    primaryDark: Color(0xFF059669),
+    warningText: Color(0xFFD97706),
+    errorDark: Color(0xFFDC2626),
+    background: Color(0xFFFAFFFE),
+    surface: Color(0xFFFFFFFF),
+    surfaceMuted: Color(0xFFF5F5F4),
+    ink: Color(0xFF1C1917),
+    onInk: Color(0xFFFAFAFA),
+    warmGray: Color(0xFFA8A29E),
+    stone: Color(0xFF78716C),
+    stoneDark: Color(0xFF57534E),
+    hairline: Color(0xFFE7E5E4),
+    inputBorder: Color(0xFFD6D3D1),
+  );
 
-  static const Color shade30 = Color(0xFFD4D4D8);
-  static const Color shade40 = Color(0xFFA1A1AA);
-  static const Color shade50 = Color(0xFF71717A);
-  static const Color shade60 = Color(0xFF52525B);
-  static const Color shade70 = Color(0xFF3F3F46);
+  static const AppPalette dark = AppPalette(
+    primaryDark: Color(0xFF34D399),
+    warningText: Color(0xFFFBBF24),
+    errorDark: Color(0xFFF87171),
+    background: Color(0xFF1C1917),
+    surface: Color(0xFF292524),
+    surfaceMuted: Color(0xFF44403C),
+    ink: Color(0xFFFAFAF9),
+    onInk: Color(0xFF1C1917),
+    warmGray: Color(0xFF78716C),
+    stone: Color(0xFFA8A29E),
+    stoneDark: Color(0xFFD6D3D1),
+    hairline: Color(0xFF44403C),
+    inputBorder: Color(0xFF57534E),
+  );
 
-  static const Color hairlineLight = Color(0xFFE4E4E7);
-  static const Color hairlineDark = Color(0xFF1E2C31);
-
-  static const Color aloe10 = Color(0xFFC1FBD4);
-  static const Color pistachio10 = Color(0xFFD4F9E0);
-
-  static const Color linkCool1 = Color(0xFF9DABAD);
-  static const Color linkCool2 = Color(0xFF9797A2);
-  static const Color linkCool3 = Color(0xFFBDBDCA);
-  static const Color linkMint = Color(0xFF99B3AD);
-
-  /// Secondary text on light canvas. shade-40 fails 4.5:1 on cream, so
-  /// readable secondary copy uses shade-50 and small print uses shade-60.
-  static const Color textSecondary = shade50;
-  static const Color textSmall = shade60;
+  final Color primaryDark;
+  final Color warningText;
+  final Color errorDark;
+  final Color background;
+  final Color surface;
+  final Color surfaceMuted;
+  final Color ink;
+  final Color onInk;
+  final Color warmGray;
+  final Color stone;
+  final Color stoneDark;
+  final Color hairline;
+  final Color inputBorder;
 }
 
-/// DESIGN.md `spacing` (8 px base unit).
+/// The colours of the active palette. Read them in `build`, never store them:
+/// they change when the app switches between light and dark. The app rebuilds
+/// every widget when that happens, including const ones (see `app.dart`).
+abstract final class AppColors {
+  static AppPalette _palette = AppPalette.light;
+
+  static bool get isDark => identical(_palette, AppPalette.dark);
+
+  /// Switches palette. Returns whether anything changed.
+  static bool use(Brightness brightness) {
+    final next = brightness == Brightness.dark ? AppPalette.dark : AppPalette.light;
+    if (identical(next, _palette)) return false;
+    _palette = next;
+    return true;
+  }
+
+  /// Mint: CTAs, progress, success.
+  static const Color primary = Color(0xFF10B981);
+
+  /// Pressed mint, and mint text on a tint (active chips, on-track status).
+  static Color get primaryDark => _palette.primaryDark;
+  static const Color onPrimary = Color(0xFFFFFFFF);
+
+  /// Fixed logo colours: the store mark is the same artwork in both palettes.
+  static const Color brandDeep = Color(0xFF059669);
+  static const Color brandOff = Color(0xFFD6D3D1);
+  static const Color brandPale = Color(0xFFE7E5E4);
+
+  /// Mint at 10 %: active chips, status fills, the hero panel.
+  static const Color primaryTint = Color(0x1A10B981);
+
+  /// Mint at 5 %: selected rows, quiet summary bands.
+  static const Color primaryWash = Color(0x0D10B981);
+
+  /// Mint at 20 %: the border of a mint-tinted chip or card.
+  static const Color primaryBorder = Color(0x3310B981);
+
+  /// Sky: tips and helpful callouts.
+  static const Color info = Color(0xFF38BDF8);
+  static const Color infoTint = Color(0x1A38BDF8);
+  static const Color infoBorder = Color(0x3338BDF8);
+
+  /// Approaching a limit, review needed.
+  static const Color warning = Color(0xFFF59E0B);
+  static Color get warningText => _palette.warningText;
+  static const Color warningTint = Color(0x1AF59E0B);
+  static const Color warningBorder = Color(0x33F59E0B);
+
+  /// Failed or blocked. Keep it rare: DESIGN.md asks for no red-heavy screens.
+  static const Color error = Color(0xFFEF4444);
+  static Color get errorDark => _palette.errorDark;
+  static const Color errorTint = Color(0x1AEF4444);
+  static const Color errorBorder = Color(0x33EF4444);
+
+  /// Root canvas and panels.
+  static Color get background => _palette.background;
+  static Color get surface => _palette.surface;
+  static Color get surfaceMuted => _palette.surfaceMuted;
+
+  /// Main text. Snack bars and tooltips use it as a fill, with [onInk] on top.
+  static Color get ink => _palette.ink;
+  static Color get onInk => _palette.onInk;
+
+  /// Warm grey: inactive states. Too pale for text.
+  static Color get warmGray => _palette.warmGray;
+  static Color get stone => _palette.stone;
+  static Color get stoneDark => _palette.stoneDark;
+
+  static Color get hairline => _palette.hairline;
+  static Color get inputBorder => _palette.inputBorder;
+
+  /// Secondary copy, and small print that needs a little more contrast.
+  static Color get textSecondary => stone;
+  static Color get textSmall => stoneDark;
+}
+
+/// DESIGN.md "Spacing": 8 px base unit, plus the component padding it names.
 abstract final class AppSpace {
   static const double xxs = 2;
   static const double xs = 4;
@@ -51,123 +160,159 @@ abstract final class AppSpace {
   static const double xxl = 32;
   static const double huge = 64;
 
+  /// Default card padding.
+  static const double card = 20;
+
+  /// Between major sections.
+  static const double section = 40;
+
+  /// Between an input's label and its field.
+  static const double labelGap = 6;
+
   /// Side padding on phone screens.
   static const double screen = lg;
 
-  /// Minimum touch target (ui-rules: 48 px for operator screens).
+  /// Minimum touch target (48 px for operator screens).
   static const double minTouch = 48;
+
+  /// Widest the app gets. It is a phone app; in a desktop browser it stays a
+  /// centred column instead of stretching across the window.
+  static const double maxContentWidth = 560;
 }
 
-/// DESIGN.md `rounded`.
+/// DESIGN.md "Border Radius".
 abstract final class AppRadius {
-  static const double xs = 4;
-  static const double sm = 5;
-  static const double md = 8;
-  static const double lg = 12;
-  static const double xl = 20;
+  static const double sm = 6;
+  static const double tooltip = 8;
+  static const double md = 12;
+  static const double lg = 16;
+  static const double xl = 24;
   static const double pill = 9999;
 
-  static const BorderRadius card = BorderRadius.all(Radius.circular(lg));
+  static const BorderRadius chip = BorderRadius.all(Radius.circular(sm));
+  static const BorderRadius inner = BorderRadius.all(Radius.circular(tooltip));
+  static const BorderRadius button = BorderRadius.all(Radius.circular(md));
   static const BorderRadius input = BorderRadius.all(Radius.circular(md));
+  static const BorderRadius card = BorderRadius.all(Radius.circular(md));
+  static const BorderRadius cardElevated = BorderRadius.all(Radius.circular(lg));
+  static const BorderRadius modal = BorderRadius.all(Radius.circular(lg));
   static const BorderRadius frame = BorderRadius.all(Radius.circular(xl));
-  static const BorderRadius sheetTop = BorderRadius.vertical(top: Radius.circular(xl));
+  static const BorderRadius sheetTop = BorderRadius.vertical(top: Radius.circular(lg));
 }
 
-/// DESIGN.md "Elevation & Depth".
+/// DESIGN.md "Elevation": ink shadows, never harsh.
 abstract final class AppShadows {
-  /// Level 3: stacked tiny shadows, the paper halo used on featured cards.
-  static const List<BoxShadow> level3 = [
-    BoxShadow(color: Color(0x1A000000), offset: Offset(0, 8), blurRadius: 8),
-    BoxShadow(color: Color(0x1A000000), offset: Offset(0, 4), blurRadius: 4),
-    BoxShadow(color: Color(0x1A000000), offset: Offset(0, 2), blurRadius: 2),
-    BoxShadow(color: Color(0x1A000000), spreadRadius: 1),
+  static const List<BoxShadow> subtle = [
+    BoxShadow(color: Color(0x0F1C1917), offset: Offset(0, 1), blurRadius: 3),
   ];
-
-  /// Level 4: modal or floating panel on light.
-  static const List<BoxShadow> level4 = [
-    BoxShadow(color: Color(0x40000000), offset: Offset(0, 25), blurRadius: 50, spreadRadius: -12),
+  static const List<BoxShadow> medium = [
+    BoxShadow(color: Color(0x141C1917), offset: Offset(0, 4), blurRadius: 12),
+  ];
+  static const List<BoxShadow> large = [
+    BoxShadow(color: Color(0x1A1C1917), offset: Offset(0, 8), blurRadius: 24),
+  ];
+  static const List<BoxShadow> overlay = [
+    BoxShadow(color: Color(0x241C1917), offset: Offset(0, 16), blurRadius: 48),
   ];
 }
 
-/// DESIGN.md `typography`, collapsed for phones as its Responsive section
-/// describes (display sizes step down to 36 px on mobile).
+/// DESIGN.md "Typography": Manrope for headings, Nunito for body, Source Code
+/// Pro for code.
 ///
-/// Neue Haas Grotesk Display is proprietary; DESIGN.md names Inter Display at
-/// light weights as the open substitute, so display roles use Inter's opsz 32
-/// optical size. Every role enables the `ss03` stylistic set.
+/// The bundled fonts are variable and default to their lightest weight, so
+/// every style must set the `wght` axis. Build new styles with [_style], or
+/// copy an existing one; never set only `fontWeight`.
 abstract final class AppType {
-  static const String family = 'Inter';
-  static const List<FontFeature> _features = [FontFeature('ss03')];
+  static const String headingFamily = 'Manrope';
+  static const String bodyFamily = 'Nunito';
+  static const String codeFamily = 'SourceCodePro';
 
   static TextStyle _style({
+    required String family,
     required double size,
-    required double weight,
+    required int weight,
     required double height,
     double tracking = 0,
-    bool display = false,
-    Color color = AppColors.ink,
+    Color? color,
   }) {
     return TextStyle(
       fontFamily: family,
       fontSize: size,
       height: height,
-      letterSpacing: tracking,
-      fontWeight: _nearestWeight(weight),
-      fontVariations: [
-        FontVariation('wght', weight),
-        FontVariation('opsz', display ? 32 : 14),
-      ],
-      fontFeatures: _features,
-      color: color,
+      letterSpacing: size * tracking,
+      fontWeight: FontWeight.values[weight ~/ 100 - 1],
+      fontVariations: [FontVariation('wght', weight.toDouble())],
+      color: color ?? AppColors.ink,
     );
   }
 
-  static FontWeight _nearestWeight(double weight) {
-    if (weight < 350) return FontWeight.w300;
-    if (weight < 450) return FontWeight.w400;
-    if (weight < 525) return FontWeight.w500;
-    return FontWeight.w600;
-  }
+  /// The one big amount on a screen.
+  static TextStyle get display =>
+      _style(family: headingFamily, size: 36, weight: 800, height: 1.15, tracking: 0.02);
 
-  /// Mobile step of display-xxl (DESIGN.md: "drops to ~56–64px"): the
-  /// welcome headline only (pass an ink colour on the light canvas).
-  static final TextStyle displayHero =
-      _style(size: 56, weight: 330, height: 1.0, display: true, color: AppColors.onDark);
+  /// Page titles.
+  static TextStyle get headline =>
+      _style(family: headingFamily, size: 28, weight: 700, height: 1.2, tracking: 0.01);
 
-  /// display-md (48 / 330): the one big amount on a screen, like the price
-  /// on DESIGN.md's pricing card.
-  static final TextStyle displayMd = _style(size: 48, weight: 330, height: 1.14, display: true);
+  /// Section and card titles, secondary figures.
+  static TextStyle get subhead => _style(family: headingFamily, size: 20, weight: 600, height: 1.3);
 
-  /// Mobile display step (36 / 330): page titles.
-  static final TextStyle displayMobile = _style(size: 36, weight: 330, height: 1.1, display: true);
+  static TextStyle get bodyLarge => _style(family: bodyFamily, size: 18, weight: 400, height: 1.6);
+  static TextStyle get body => _style(family: bodyFamily, size: 16, weight: 400, height: 1.6);
 
-  static final TextStyle headingXl =
-      _style(size: 28, weight: 500, height: 1.28, tracking: 0.42, display: true);
-  static final TextStyle headingLg =
-      _style(size: 24, weight: 400, height: 1.14, tracking: 0.36, display: true);
-  static final TextStyle headingMd =
-      _style(size: 20, weight: 500, height: 1.4, tracking: 0.3, display: true);
-  static final TextStyle headingSm =
-      _style(size: 18, weight: 500, height: 1.25, tracking: 0.72, display: true);
+  /// Body at semibold, tighter so two-line row titles stay compact.
+  static TextStyle get bodyStrong => _style(family: bodyFamily, size: 16, weight: 600, height: 1.4);
 
-  static final TextStyle bodyLg = _style(size: 18, weight: 550, height: 1.56);
-  static final TextStyle bodyMd = _style(size: 16, weight: 420, height: 1.5);
-  static final TextStyle bodyStrong = _style(size: 16, weight: 550, height: 1.5);
-  static final TextStyle caption =
-      _style(size: 14, weight: 500, height: 1.49, tracking: 0.28, color: AppColors.textSecondary);
-  static final TextStyle micro =
-      _style(size: 13, weight: 500, height: 1.5, tracking: -0.13, color: AppColors.textSmall);
-  static final TextStyle eyebrowCap = _style(size: 12, weight: 400, height: 1.2, tracking: 0.72);
+  static TextStyle get bodySmall => _style(
+    family: bodyFamily,
+    size: 14,
+    weight: 400,
+    height: 1.5,
+    tracking: 0.01,
+    color: AppColors.textSecondary,
+  );
+  static TextStyle get caption => _style(
+    family: bodyFamily,
+    size: 12,
+    weight: 600,
+    height: 1.4,
+    tracking: 0.02,
+    color: AppColors.textSmall,
+  );
 
-  /// Same style with tabular figures, so changing amounts do not jump.
-  static TextStyle tabular(TextStyle style) =>
-      style.copyWith(fontFeatures: const [FontFeature('ss03'), FontFeature('tnum')]);
-}
+  /// caption at the strong weight: the selected tab label.
+  static TextStyle get captionStrong => _style(
+    family: bodyFamily,
+    size: 12,
+    weight: 800,
+    height: 1.4,
+    tracking: 0.02,
+    color: AppColors.primaryDark,
+  );
+  static TextStyle get overline =>
+      _style(family: headingFamily, size: 11, weight: 700, height: 1.2, tracking: 0.06);
 
-/// Bundled images.
-abstract final class AppAssets {
-  /// Store-front mark and "TINDAHAN" word, recoloured to the palette (ink and
-  /// aloe) on a transparent background. Width is 4.46 × height.
-  static const String logo = 'assets/images/logo.png';
-  static const double logoAspectRatio = 1203 / 270;
+  /// Input label: 14 / 600, above the field.
+  static TextStyle get label =>
+      _style(family: bodyFamily, size: 14, weight: 600, height: 1.4, color: AppColors.stoneDark);
+
+  /// Input helper text: 13 / 400.
+  static TextStyle get helper =>
+      _style(family: bodyFamily, size: 13, weight: 400, height: 1.4, color: AppColors.stone);
+
+  /// Chip and small link label: 13 / 600.
+  static TextStyle get chip =>
+      _style(family: bodyFamily, size: 13, weight: 600, height: 1.4, color: AppColors.stoneDark);
+
+  /// Large button label: 17 px.
+  static TextStyle get button => _style(family: bodyFamily, size: 17, weight: 700, height: 1.3);
+
+  static TextStyle get code => _style(family: codeFamily, size: 14, weight: 400, height: 1.6);
+
+  /// Same size and weight in Manrope with tabular figures, so changing amounts
+  /// do not jump. Nunito has no tabular figures, so numbers always use this.
+  static TextStyle tabular(TextStyle style) => style.copyWith(
+        fontFamily: headingFamily,
+        fontFeatures: const [FontFeature('tnum')],
+      );
 }

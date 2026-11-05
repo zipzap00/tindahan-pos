@@ -10,9 +10,8 @@ import '../../widgets/layout.dart';
 import '../../widgets/pill_button.dart';
 import '../../widgets/states.dart';
 
-/// First screen when signed out. Same cream canvas as the rest of the app
-/// (owner's choice, replacing DESIGN.md's black cinematic welcome), with the
-/// logo top-left.
+/// First screen when signed out. Same canvas as the rest of the app, with the
+/// logo top-left and the headline in the awning panel.
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -36,35 +35,44 @@ class WelcomeScreen extends StatelessWidget {
                     Row(
                       children: [
                         const Expanded(
-                          child: Align(alignment: Alignment.centerLeft, child: AppLogo(height: 32)),
+                          child: Align(alignment: Alignment.centerLeft, child: AppLogo(height: 36)),
                         ),
                         TextButton(
                           onPressed: () => language.setLanguage(isEnglish ? AppLanguage.fil : AppLanguage.en),
                           style: TextButton.styleFrom(
-                            foregroundColor: AppColors.ink,
+                            foregroundColor: AppColors.stoneDark,
                             minimumSize: const Size(48, AppSpace.minTouch),
-                            shape: const StadiumBorder(side: BorderSide(color: AppColors.ink)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: AppRadius.button,
+                              side: BorderSide(color: AppColors.inputBorder, width: 1.5),
+                            ),
                             padding: const EdgeInsets.symmetric(horizontal: AppSpace.lg),
                           ),
                           child: Text(
                             isEnglish ? 'Filipino' : 'English',
-                            style: AppType.caption.copyWith(color: AppColors.ink),
+                            style: AppType.label,
                           ),
                         ),
                       ],
                     ),
                     const Spacer(),
-                    const SizedBox(height: AppSpace.huge),
-                    Text(
-                      s.welcomeEyebrow.toUpperCase(),
-                      style: AppType.eyebrowCap.copyWith(color: AppColors.textSecondary),
-                    ),
-                    const SizedBox(height: AppSpace.lg),
-                    Text(s.welcomeHeadline, style: AppType.displayHero.copyWith(color: AppColors.ink)),
                     const SizedBox(height: AppSpace.xl),
-                    Text(s.welcomeLead, style: AppType.bodyLg.copyWith(color: AppColors.textSecondary)),
+                    AwningPanel(
+                      borderRadius: AppRadius.frame,
+                      awningHeight: 44,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(s.welcomeEyebrow.toUpperCase(), style: AppType.overline),
+                          const SizedBox(height: AppSpace.md),
+                          Text(s.welcomeHeadline, style: AppType.display),
+                          const SizedBox(height: AppSpace.lg),
+                          Text(s.welcomeLead, style: AppType.body),
+                        ],
+                      ),
+                    ),
                     const Spacer(),
-                    const SizedBox(height: AppSpace.huge),
+                    const SizedBox(height: AppSpace.xl),
                     PillButton(
                       label: s.createStoreAccount,
                       expand: true,
@@ -81,16 +89,12 @@ class WelcomeScreen extends StatelessWidget {
                           MaterialPageRoute<void>(builder: (_) => const SignInScreen()),
                         ),
                         style: TextButton.styleFrom(
-                          foregroundColor: AppColors.ink,
+                          foregroundColor: AppColors.primaryDark,
                           minimumSize: const Size(48, AppSpace.minTouch),
                         ),
                         child: Text(
                           s.haveAccountSignIn,
-                          style: AppType.bodyMd.copyWith(
-                            color: AppColors.ink,
-                            decoration: TextDecoration.underline,
-                            decorationColor: AppColors.ink,
-                          ),
+                          style: AppType.bodyStrong.copyWith(color: AppColors.primaryDark),
                         ),
                       ),
                     ),
@@ -200,7 +204,7 @@ class _SignInScreenState extends State<SignInScreen> {
     final s = context.s;
     final message = _message;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: const AppLogo(height: 24)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -237,7 +241,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     if (message != null) ...[
                       const SizedBox(height: AppSpace.lg),
-                      InlineNotice(message: message, icon: Icons.error_outline_rounded),
+                      InlineNotice(message: message, icon: Icons.error_outline_rounded, tone: NoticeTone.error),
                     ],
                     const SizedBox(height: AppSpace.xl),
                     PillButton(label: s.signIn, onPressed: _submit, loading: _busy, expand: true),
@@ -307,7 +311,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final s = context.s;
     final message = _message;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: const AppLogo(height: 24)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -347,7 +351,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   if (message != null) ...[
                     const SizedBox(height: AppSpace.lg),
-                    InlineNotice(message: message, icon: Icons.error_outline_rounded),
+                    InlineNotice(message: message, icon: Icons.error_outline_rounded, tone: NoticeTone.error),
                   ],
                   const SizedBox(height: AppSpace.xl),
                   PillButton(label: s.createAccount, onPressed: _submit, loading: _busy, expand: true),

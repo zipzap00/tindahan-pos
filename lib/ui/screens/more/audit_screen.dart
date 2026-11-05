@@ -95,6 +95,6 @@ class _AuditScreenState extends State<AuditScreen> {
       if (amount != null && entry.action != AuditAction.productCreated) formatPeso(amount),
     ];
     if (parts.isEmpty) return null;
-    return Text(parts.join('\n'), textAlign: TextAlign.end, style: AppType.tabular(AppType.caption));
+    return Text(parts.join('\n'), textAlign: TextAlign.end, style: AppType.tabular(AppType.bodySmall));
   }
 }

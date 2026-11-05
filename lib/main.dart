@@ -6,12 +6,14 @@ import 'app.dart';
 import 'core/l10n/language.dart';
 import 'core/log.dart';
 import 'core/result.dart';
+import 'core/theme/appearance.dart';
 import 'data/firestore_support.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final language = await LanguageController.load();
+  final appearance = await AppearanceController.load();
 
   AppError? startupError;
   try {
@@ -26,5 +28,5 @@ Future<void> main() async {
     startupError = mapError(error, '[main/firebase]');
   }
 
-  runApp(TindahanApp(language: language, startupError: startupError));
+  runApp(TindahanApp(language: language, appearance: appearance, startupError: startupError));
 }

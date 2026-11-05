@@ -1,8 +1,47 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/tokens.dart';
+import 'cards.dart';
 
-/// Large page title for tab screens: optional eyebrow, thin display title,
+/// Holds the whole app, Navigator included, to [AppSpace.maxContentWidth], so
+/// pushed screens, sheets and dialogs all stay in the same column on a wide
+/// browser window. On a phone it changes nothing.
+///
+/// The widget tree is the same at every width: resizing the window across the
+/// limit must not rebuild the Navigator and lose the user's place.
+class AppViewport extends StatelessWidget {
+  const AppViewport({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final wide = media.size.width > AppSpace.maxContentWidth;
+    final width = wide ? AppSpace.maxContentWidth : media.size.width;
+    final edge = BorderSide(color: AppColors.hairline);
+    return ColoredBox(
+      color: AppColors.background,
+      child: Center(
+        child: SizedBox(
+          width: width,
+          child: DecoratedBox(
+            position: DecorationPosition.foreground,
+            decoration: BoxDecoration(
+              border: wide ? Border(left: edge, right: edge) : null,
+            ),
+            child: MediaQuery(
+              data: media.copyWith(size: Size(width, media.size.height)),
+              child: child,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Large page title for tab screens: optional eyebrow, headline title,
 /// optional caption and up to two actions.
 class PageHeader extends StatelessWidget {
   const PageHeader({
@@ -32,13 +71,13 @@ class PageHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (eyebrowText != null) ...[
-                  Text(eyebrowText.toUpperCase(), style: AppType.eyebrowCap.copyWith(color: AppColors.textSmall)),
+                  Text(eyebrowText.toUpperCase(), style: AppType.overline.copyWith(color: AppColors.textSmall)),
                   const SizedBox(height: AppSpace.sm),
                 ],
-                Semantics(header: true, child: Text(title, style: AppType.displayMobile)),
+                Semantics(header: true, child: Text(title, style: AppType.headline)),
                 if (captionText != null) ...[
                   const SizedBox(height: AppSpace.xs),
-                  Text(captionText, style: AppType.caption),
+                  Text(captionText, style: AppType.bodySmall),
                 ],
               ],
             ),
@@ -61,20 +100,17 @@ class SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = actionLabel;
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpace.xl, bottom: AppSpace.md),
+      padding: const EdgeInsets.only(top: AppSpace.section, bottom: AppSpace.md),
       child: Row(
         children: [
-          Expanded(child: Semantics(header: true, child: Text(title, style: AppType.headingSm))),
+          Expanded(child: Semantics(header: true, child: Text(title, style: AppType.subhead))),
           if (label != null && onAction != null)
             TextButton(
               onPressed: onAction,
               style: TextButton.styleFrom(
-                foregroundColor: AppColors.ink,
+                foregroundColor: AppColors.primaryDark,
                 minimumSize: const Size(48, AppSpace.minTouch),
-                textStyle: AppType.caption.copyWith(
-                  color: AppColors.ink,
-                  decoration: TextDecoration.underline,
-                ),
+                textStyle: AppType.chip,
               ),
               child: Text(label),
             ),
@@ -102,15 +138,15 @@ class StatRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: emphasize ? AppType.bodyStrong : AppType.bodyMd.copyWith(color: AppColors.textSecondary),
+              style: emphasize ? AppType.bodyStrong : AppType.body.copyWith(color: AppColors.textSecondary),
             ),
           ),
           const SizedBox(width: AppSpace.md),
-          Flexible(
+          Expanded(
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: AppType.tabular(emphasize ? AppType.bodyStrong : AppType.bodyMd),
+              style: AppType.tabular(emphasize ? AppType.bodyStrong : AppType.body),
             ),
           ),
         ],
@@ -140,19 +176,19 @@ class StatTile extends StatelessWidget {
         children: [
           Row(
             children: [
-              if (tileIcon != null) ...[Icon(tileIcon, size: 18), const SizedBox(width: AppSpace.xs + 2)],
-              Expanded(child: Text(label, style: AppType.caption, maxLines: 2)),
+              if (tileIcon != null) ...[IconChip(icon: tileIcon, size: 32), const SizedBox(width: AppSpace.sm)],
+              Expanded(child: Text(label, style: AppType.bodySmall, maxLines: 2)),
             ],
           ),
-          const SizedBox(height: AppSpace.sm),
+          const SizedBox(height: AppSpace.md),
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
-            child: Text(value, style: AppType.tabular(AppType.headingLg)),
+            child: Text(value, style: AppType.tabular(AppType.subhead)),
           ),
           if (captionText != null) ...[
             const SizedBox(height: AppSpace.xs),
-            Text(captionText, style: AppType.micro, maxLines: 2),
+            Text(captionText, style: AppType.caption, maxLines: 2),
           ],
         ],
       ),
@@ -160,9 +196,10 @@ class StatTile extends StatelessWidget {
     final tap = onTap;
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.canvasLight,
+        color: AppColors.surface,
         borderRadius: AppRadius.card,
-        border: Border.all(color: AppColors.hairlineLight),
+        border: Border.all(color: AppColors.hairline),
+        boxShadow: AppShadows.subtle,
       ),
       child: tap == null
           ? content
@@ -183,9 +220,9 @@ class BottomActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.canvasLight,
-        border: Border(top: BorderSide(color: AppColors.hairlineLight)),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.hairline)),
       ),
       padding: const EdgeInsets.fromLTRB(AppSpace.lg, AppSpace.md, AppSpace.lg, AppSpace.md),
       child: SafeArea(top: false, child: child),

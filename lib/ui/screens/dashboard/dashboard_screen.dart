@@ -14,6 +14,7 @@ import '../../../domain/dashboard_summary.dart';
 import '../../../domain/inventory.dart';
 import '../../scopes.dart';
 import '../../shell/home_shell.dart';
+import '../../widgets/brand.dart';
 import '../../widgets/cards.dart';
 import '../../widgets/layout.dart';
 import '../../widgets/pill_button.dart';
@@ -129,6 +130,12 @@ class _DashboardBody extends StatelessWidget {
             eyebrow: ManilaTime.formatLongDate(now, s),
             title: s.dashboardTitle,
             caption: session.storeName.value,
+            actions: const [
+              Padding(
+                padding: EdgeInsets.only(top: AppSpace.sm, right: AppSpace.sm),
+                child: AppLogoMark(height: 40),
+              ),
+            ],
           ),
           PagePadding(
             child: Column(
@@ -258,11 +265,11 @@ class _DashboardBody extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(s.totalReceivable, style: AppType.caption),
+                            Text(s.totalReceivable, style: AppType.bodySmall),
                             const SizedBox(height: AppSpace.xs),
-                            Text(formatPeso(receivable), style: AppType.tabular(AppType.headingLg)),
+                            Text(formatPeso(receivable), style: AppType.tabular(AppType.subhead)),
                             const SizedBox(height: AppSpace.xs),
-                            Text(s.customersWithBalance(debtors), style: AppType.micro),
+                            Text(s.customersWithBalance(debtors), style: AppType.caption),
                           ],
                         ),
                       ),
@@ -295,22 +302,21 @@ class _TodayHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
-    return AppCard(
-      tone: CardTone.featured,
+    return AwningPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(s.todaySales.toUpperCase(), style: AppType.eyebrowCap),
+          Text(s.todaySales.toUpperCase(), style: AppType.overline),
           const SizedBox(height: AppSpace.sm),
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
-            child: Text(formatPeso(netSales), style: AppType.tabular(AppType.displayMd)),
+            child: Text(formatPeso(netSales), style: AppType.tabular(AppType.display)),
           ),
           const SizedBox(height: AppSpace.sm),
           Text(
             '${s.estimatedProfitShort(formatPeso(profit))}  ·  ${s.transactionCount(transactions)}',
-            style: AppType.bodyMd,
+            style: AppType.body,
           ),
           const SizedBox(height: AppSpace.xl),
           PillButton(label: s.startSelling, icon: Icons.point_of_sale_rounded, onPressed: onSell),
@@ -349,14 +355,14 @@ class _PeriodTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
-    final header = AppType.eyebrowCap.copyWith(color: AppColors.textSmall);
+    final header = AppType.overline.copyWith(color: AppColors.textSmall);
     final value = AppType.tabular(AppType.bodyStrong);
 
     TableRow row(String label, PeriodTotals totals) => TableRow(
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpace.md),
-              child: Text(label, style: AppType.bodyMd),
+              child: Text(label, style: AppType.body),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpace.md),
@@ -378,19 +384,21 @@ class _PeriodTable extends StatelessWidget {
       child: Table(
         columnWidths: const {
           0: FlexColumnWidth(1.1),
-          1: FlexColumnWidth(1.3),
-          2: FlexColumnWidth(1.2),
-          3: FlexColumnWidth(0.6),
+          1: FlexColumnWidth(1.25),
+          2: FlexColumnWidth(1.05),
+          // Wide enough for the "COUNT" and "BILANG" headers on one line.
+          3: FlexColumnWidth(0.8),
         },
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        border: const TableBorder(horizontalInside: BorderSide(color: AppColors.hairlineLight)),
+        border: TableBorder(horizontalInside: BorderSide(color: AppColors.hairline)),
         children: [
           TableRow(
             children: [
-              Text('', style: header),
-              Text(s.columnSales.toUpperCase(), style: header, textAlign: TextAlign.end),
-              Text(s.columnProfit.toUpperCase(), style: header, textAlign: TextAlign.end),
-              Text(s.columnCount.toUpperCase(), style: header, textAlign: TextAlign.end),
+              for (final title in ['', s.columnSales, s.columnProfit, s.columnCount])
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpace.xs, bottom: AppSpace.sm),
+                  child: Text(title.toUpperCase(), style: header, textAlign: TextAlign.end),
+                ),
             ],
           ),
           row(s.periodToday, summary.today),
@@ -416,19 +424,19 @@ class _SevenDayBars extends StatelessWidget {
         .map((bar) => '${_dayLabel(bar.dayKey, s)} ${formatPeso(bar.netSales)}')
         .join(', ');
     return AppCard(
-      tone: CardTone.band,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(s.lastSevenDays, style: AppType.headingSm),
+          Text(s.lastSevenDays, style: AppType.subhead),
           const SizedBox(height: AppSpace.xs),
-          Text(s.highestDay(formatPesoCompact(maxValue)), style: AppType.micro),
+          Text(s.highestDay(formatPesoCompact(maxValue)), style: AppType.caption),
           const SizedBox(height: AppSpace.lg),
           Semantics(
             label: description,
             excludeSemantics: true,
             child: SizedBox(
-              height: chartHeight + 24,
+              // Bar plus its gap and day label; 24 left the tallest bar overflowing.
+              height: chartHeight + AppSpace.xxl,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -442,15 +450,15 @@ class _SevenDayBars extends StatelessWidget {
                             Container(
                               height: _barHeight(bar.netSales, maxValue, chartHeight),
                               decoration: BoxDecoration(
-                                color: bar.isToday ? AppColors.ink : AppColors.shade50,
-                                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xs)),
+                                color: bar.isToday ? AppColors.primary : AppColors.primaryBorder,
+                                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sm)),
                               ),
                             ),
                             const SizedBox(height: AppSpace.sm),
                             Text(
                               _dayLabel(bar.dayKey, s),
-                              style: AppType.micro.copyWith(
-                                color: bar.isToday ? AppColors.ink : AppColors.textSmall,
+                              style: AppType.caption.copyWith(
+                                color: bar.isToday ? AppColors.primaryDark : AppColors.textSmall,
                               ),
                             ),
                           ],
@@ -488,9 +496,9 @@ class _Rank extends StatelessWidget {
       height: 32,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: rank == 1 ? AppColors.aloe10 : AppColors.canvasCream,
+        color: rank == 1 ? AppColors.primaryTint : AppColors.background,
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.hairlineLight),
+        border: Border.all(color: AppColors.hairline),
       ),
       child: Text('$rank', style: AppType.tabular(AppType.bodyStrong)),
     );
@@ -534,10 +542,10 @@ class SaleRow extends StatelessWidget {
         ? s.utangFor(sale.customerName ?? '')
         : s.paymentCash;
     final Widget trailing = switch (sale.status) {
-      SaleStatus.cancelled => TagPill(label: s.statusCancelled, tone: TagTone.ink, icon: Icons.block_rounded),
-      SaleStatus.refunded => TagPill(label: s.statusRefunded, tone: TagTone.shade, icon: Icons.undo_rounded),
+      SaleStatus.cancelled => TagPill(label: s.statusCancelled, tone: TagTone.error, icon: Icons.block_rounded),
+      SaleStatus.refunded => TagPill(label: s.statusRefunded, tone: TagTone.neutral, icon: Icons.undo_rounded),
       SaleStatus.completed => sale.hasRefund
-          ? TagPill(label: s.statusPartRefund, tone: TagTone.shade, icon: Icons.undo_rounded)
+          ? TagPill(label: s.statusPartRefund, tone: TagTone.neutral, icon: Icons.undo_rounded)
           : const Icon(Icons.chevron_right_rounded),
     };
     return ListRow(

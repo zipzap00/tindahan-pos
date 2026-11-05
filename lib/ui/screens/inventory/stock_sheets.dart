@@ -99,8 +99,8 @@ class _RestockSheetState extends State<_RestockSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(s.restockTitle, style: AppType.headingLg),
-            Text(product.name, style: AppType.caption),
+            Text(s.restockTitle, style: AppType.subhead),
+            Text(product.name, style: AppType.bodySmall),
             const SizedBox(height: AppSpace.lg),
             QuantityField(
               label: s.quantityReceived,
@@ -161,7 +161,7 @@ class _RestockSheetState extends State<_RestockSheet> {
               ),
             ),
             const SizedBox(height: AppSpace.sm),
-            Text(s.averageCostExplainer, style: AppType.micro),
+            Text(s.averageCostExplainer, style: AppType.caption),
             const SizedBox(height: AppSpace.xl),
             PillButton(label: s.saveRestock, onPressed: _save, loading: _busy, expand: true),
           ],
@@ -234,8 +234,8 @@ class _AdjustSheetState extends State<_AdjustSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(s.adjustTitle, style: AppType.headingLg),
-            Text(product.name, style: AppType.caption),
+            Text(s.adjustTitle, style: AppType.subhead),
+            Text(product.name, style: AppType.bodySmall),
             const SizedBox(height: AppSpace.lg),
             StatRow(label: s.stockInApp, value: '${product.stock}'),
             const SizedBox(height: AppSpace.md),
@@ -248,7 +248,7 @@ class _AdjustSheetState extends State<_AdjustSheet> {
               validator: (value) => int.tryParse(value ?? '') == null ? s.enterQuantity : null,
             ),
             const SizedBox(height: AppSpace.lg),
-            Text(s.reason, style: AppType.caption.copyWith(color: AppColors.ink)),
+            Text(s.reason, style: AppType.label),
             const SizedBox(height: AppSpace.sm),
             Wrap(
               spacing: AppSpace.sm,

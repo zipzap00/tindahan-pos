@@ -144,7 +144,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Text(s.inventoryValueTitle, style: AppType.headingSm),
+                              Text(s.inventoryValueTitle, style: AppType.subhead),
                               const SizedBox(height: AppSpace.sm),
                               StatRow(label: s.capitalInStock, value: formatPeso(value.capital)),
                               StatRow(label: s.valueAtSellingPrice, value: formatPeso(value.retail)),
@@ -154,7 +154,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                 emphasize: true,
                               ),
                               const SizedBox(height: AppSpace.xs),
-                              Text(s.unitsOnHand(value.totalUnits), style: AppType.micro),
+                              Text(s.unitsOnHand(value.totalUnits), style: AppType.caption),
                             ],
                           ),
                         ),
@@ -243,9 +243,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: AppSpace.screen),
                   sliver: DecoratedSliver(
                     decoration: BoxDecoration(
-                      color: AppColors.canvasLight,
+                      color: AppColors.surface,
                       borderRadius: AppRadius.card,
-                      border: Border.all(color: AppColors.hairlineLight),
+                      border: Border.all(color: AppColors.hairline),
                     ),
                     sliver: SliverList.builder(
                       itemCount: shown.length,
@@ -307,7 +307,7 @@ class _MenuLabel extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 160),
               child: Text(
                 label,
-                style: AppType.caption.copyWith(color: AppColors.ink),
+                style: AppType.label,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),
@@ -343,10 +343,10 @@ class _InventoryRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('${product.stock}', style: AppType.tabular(AppType.headingMd)),
+          Text('${product.stock}', style: AppType.tabular(AppType.subhead)),
           const SizedBox(height: AppSpace.xxs),
           if (product.archived)
-            TagPill(label: s.archivedLabel, tone: TagTone.outline)
+            TagPill(label: s.archivedLabel, tone: TagTone.neutral)
           else
             StockBadge(status: product.status),
         ],
