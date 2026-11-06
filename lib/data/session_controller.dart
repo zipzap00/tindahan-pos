@@ -68,6 +68,7 @@ class SessionController extends ChangeNotifier {
   StreamSubscription<User?>? _authSubscription;
   StreamSubscription<DocumentSnapshot<Json>>? _userSubscription;
   StreamSubscription<DocumentSnapshot<Json>>? _memberSubscription;
+  Timer? _serverWaitTimer;
   StoreSession? _session;
   String? _storeId;
   User? _user;
@@ -108,12 +109,13 @@ class SessionController extends ChangeNotifier {
         .doc(storeId)
         .collection('members')
         .doc(user.uid)
-        .snapshots()
+        .snapshots(includeMetadataChanges: true)
         .listen(
       (doc) {
         final data = doc.data();
         final member = data == null ? null : Member.fromMap(user.uid, data);
         if (member == null || !member.active) {
+          _cancelServerWait();
           _endSession();
           _setState(const AccessDisabled());
           return;
@@ -123,10 +125,14 @@ class SessionController extends ChangeNotifier {
           current.updateMember(member);
           return;
         }
-        _endSession();
-        final session = StoreSession(db: db, storeId: storeId, member: member);
-        _session = session;
-        _setState(SessionReady(session));
+        // A store just created on this phone shows up here before the server
+        // has saved it. Reading the store now would be refused for good, so
+        // wait for the server, or carry on offline after [serverWait].
+        if (doc.metadata.hasPendingWrites) {
+          _serverWaitTimer ??= Timer(serverWait, () => _startSession(storeId, member));
+          return;
+        }
+        _startSession(storeId, member);
       },
       onError: (Object error, StackTrace stack) {
         logError('[session/member]', error, stack);
@@ -134,6 +140,19 @@ class SessionController extends ChangeNotifier {
         _setState(SessionFailed(mapError(error, '[session/member]')));
       },
     );
+  }
+
+  void _startSession(String storeId, Member member) {
+    _cancelServerWait();
+    _endSession();
+    final session = StoreSession(db: db, storeId: storeId, member: member);
+    _session = session;
+    _setState(SessionReady(session));
+  }
+
+  void _cancelServerWait() {
+    _serverWaitTimer?.cancel();
+    _serverWaitTimer = null;
   }
 
   /// Re-reads the user profile, for the retry button on a failed state.
@@ -145,6 +164,7 @@ class SessionController extends ChangeNotifier {
   }
 
   void _stopMember() {
+    _cancelServerWait();
     unawaited(_memberSubscription?.cancel());
     _memberSubscription = null;
     _storeId = null;

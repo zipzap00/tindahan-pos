@@ -114,6 +114,7 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 - Welcome headline is "Busssssseng" in both languages (2026-11-06, owner's request).
 - Expense category is typed by hand (2026-11-06, owner's request), required, stored as text. Older expenses keep their enum names and still show translated through `expenseCategoryLabelByName`.
 - Dashboard and More polish (2026-11-06, owner request): all four dashboard tiles open a page (profit and transactions go to Sales, as there is no separate profit page); the Sales date opens a calendar; the Summary header shows the store name and the More header shows the member name instead of the words Today and More.
+- A new store opens only once the server has confirmed the membership (`hasPendingWrites`), or after `serverWait` when offline. Starting earlier made every store listener fail with permission denied until Try again.
 - Google sign-in uses `FirebaseAuth.signInWithProvider(GoogleAuthProvider())` (Firebase's browser flow), not the `google_sign_in` package: no new dependency. Needs the Google provider on in the console, the Android SHA-1/SHA-256 registered (debug key done; add the release key before publishing) and the iOS encoded-App-ID URL scheme in `Info.plist` (done). Cashiers still sign in with the email and password the owner set.
 - Web added for testing in Chrome (`flutter run -d chrome`): Firebase web app registered, Google sign-in uses `signInWithPopup` on web, CSV export shares in-memory data (`XFile.fromData`) so it works on phones and downloads in the browser; `path_provider` removed.
 - **Iba pa → Aking account** (owners and cashiers): name, email, sign-in method (Google / email and password), role, store. Email-and-password logins can change their password after re-entering the current one (`reauthenticateWithCredential` then `updatePassword`), or send a reset email. Google-only logins see a note that their password is managed by Google. Passwords are never shown: Firebase keeps only a one-way hash.
@@ -122,7 +123,6 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 
 ## Open Questions
 
-- Known bug: right after creating a store, lists that start before the server saves the membership show "You do not have permission for this" (Summary, Products, Utang) until Try again. Seen 2026-11-06. Only the first session of a new store.
 
 - Should cost fields move to an owner-only subcollection so cashiers cannot read them through the API?
 - Add camera barcode scanning (e.g. `mobile_scanner`)?
