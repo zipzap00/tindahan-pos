@@ -63,6 +63,7 @@ class ReceiptScreen extends StatelessWidget {
                 ] else ...[
                   StatRow(label: s.cashReceived, value: formatPeso(sale.amountPaid)),
                   StatRow(label: s.changeLabel, value: formatPeso(sale.change), emphasize: true),
+                  if (sale.customerName != null) StatRow(label: s.customer, value: sale.customerName!),
                 ],
               ],
             ),

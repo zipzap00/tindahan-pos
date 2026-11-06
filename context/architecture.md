@@ -57,6 +57,7 @@ Every write below is one `WriteBatch`, committed through `commitBatch`:
 | Create product | product, `initial` movement, audit |
 | Checkout | sale, per-item product increment (stock −, soldQty +, revenue +, cogs +), per-item `sale` movement, dailyStats increment, and for utang: customer balance + ledger `charge` |
 | Refund | refund doc, sale status/refunded totals, per-item product increment (stock + only if restocked), `refund` movements, dailyStats of the **sale's** day, utang ledger `refund`, audit |
+| Paid up | customer balance to 0, `archived` and `archivedAt`, ledger `payment`, dailyStats `utangCollected`, audit |
 | Cancel | sale status, stock back, `cancel` movements, reverse dailyStats of the sale's day, utang ledger `cancel`, audit |
 | Restock | product stock + and new weighted-average `unitCost`, `restock` movement, audit |
 | Adjust | product stock ±, `adjustment` movement with reason, audit |

@@ -69,7 +69,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     final confirmed = await showConfirmDialog(
       context,
       title: s.deleteExpenseTitle,
-      message: s.deleteExpenseMessage(formatPeso(expense.amount), s.expenseCategoryLabel(expense.category)),
+      message: s.deleteExpenseMessage(formatPeso(expense.amount), s.expenseCategoryLabelByName(expense.category)),
       confirmLabel: s.delete,
       destructive: true,
     );
@@ -144,7 +144,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   children: [
                     for (final expense in list)
                       ListRow(
-                        title: s.expenseCategoryLabel(expense.category),
+                        title: s.expenseCategoryLabelByName(expense.category),
                         subtitle: [
                           ManilaTime.formatDate(ManilaTime.fromDayKey(expense.dayKey), s),
                           if (expense.note.isNotEmpty) expense.note,
@@ -193,13 +193,14 @@ class _ExpenseSheetState extends State<_ExpenseSheet> {
   final _formKey = GlobalKey<FormState>();
   final _amount = TextEditingController();
   final _note = TextEditingController();
-  ExpenseCategory _category = ExpenseCategory.electricity;
+  final _category = TextEditingController();
   DateTime _day = ManilaTime.startOfDay(ManilaTime.now());
   bool _busy = false;
 
   @override
   void dispose() {
     _amount.dispose();
+    _category.dispose();
     _note.dispose();
     super.dispose();
   }
@@ -223,7 +224,7 @@ class _ExpenseSheetState extends State<_ExpenseSheet> {
     setState(() => _busy = true);
     final result = await widget.session.expenses.add(
       amount: parsePesoToCents(_amount.text) ?? 0,
-      category: _category,
+      category: _category.text,
       dayKey: ManilaTime.dayKey(_day),
       note: _note.text,
     );
@@ -260,19 +261,13 @@ class _ExpenseSheetState extends State<_ExpenseSheet> {
               },
             ),
             const SizedBox(height: AppSpace.lg),
-            Text(s.category, style: AppType.label),
-            const SizedBox(height: AppSpace.sm),
-            Wrap(
-              spacing: AppSpace.sm,
-              runSpacing: AppSpace.sm,
-              children: [
-                for (final category in ExpenseCategory.values)
-                  ChoicePill(
-                    label: s.expenseCategoryLabel(category),
-                    selected: category == _category,
-                    onTap: () => setState(() => _category = category),
-                  ),
-              ],
+            AppTextField(
+              label: s.category,
+              controller: _category,
+              hint: s.expenseCategoryHint,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.next,
+              validator: (value) => (value ?? '').trim().isEmpty ? s.required : null,
             ),
             const SizedBox(height: AppSpace.lg),
             Text(s.date, style: AppType.label),

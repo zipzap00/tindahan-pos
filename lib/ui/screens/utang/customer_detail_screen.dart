@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import '../../../core/l10n/language.dart';
 import '../../../core/manila_time.dart';
 import '../../../core/money.dart';
+import '../../../core/result.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../data/live_query.dart';
 import '../../../data/models/customer.dart';
 import '../../../data/store_session.dart';
+import '../../../domain/utang_archive.dart';
 import '../../scopes.dart';
 import '../../widgets/cards.dart';
 import '../../widgets/dialogs.dart';
@@ -14,6 +16,7 @@ import '../../widgets/inputs.dart';
 import '../../widgets/layout.dart';
 import '../../widgets/pill_button.dart';
 import '../../widgets/states.dart';
+import '../../widgets/tags.dart';
 import '../sales/sale_detail_screen.dart';
 import 'customer_picker.dart';
 
@@ -28,6 +31,7 @@ class CustomerDetailScreen extends StatefulWidget {
 
 class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   LiveQuery<List<LedgerEntry>>? _ledger;
+  bool _busy = false;
 
   @override
   void didChangeDependencies() {
@@ -69,10 +73,20 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         }
         final ledgerError = ledger.error;
         final entries = ledger.value ?? const <LedgerEntry>[];
+        final historyKnown = ledger.hasValue && ledgerError == null;
+        final canRemove = !customer.archived && customer.balance == 0 && historyKnown && entries.isEmpty;
+        final canMarkPaidUp = customer.balance > 0 || (customer.balance == 0 && historyKnown && entries.isNotEmpty);
+        final archivedAt = customer.archivedAt;
         return Scaffold(
           appBar: AppBar(
             title: Text(customer.name),
             actions: [
+              if (canRemove)
+                IconButton(
+                  tooltip: s.removeCustomer,
+                  icon: const Icon(Icons.delete_outline_rounded),
+                  onPressed: () => _remove(session, customer),
+                ),
               IconButton(
                 tooltip: s.editCustomer,
                 icon: const Icon(Icons.edit_outlined),
@@ -101,6 +115,19 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                     if (customer.note.isNotEmpty) ...[
                       const SizedBox(height: AppSpace.xs),
                       Text(customer.note, style: AppType.bodySmall),
+                    ],
+                    if (customer.archived) ...[
+                      const SizedBox(height: AppSpace.md),
+                      TagPill(label: s.archivedLabel, icon: Icons.inventory_2_outlined),
+                      if (archivedAt != null) ...[
+                        const SizedBox(height: AppSpace.xs),
+                        Text(
+                          s.removalDate(
+                            ManilaTime.formatDate(archiveRemovalDate(ManilaTime.toManila(archivedAt)), s),
+                          ),
+                          style: AppType.bodySmall,
+                        ),
+                      ],
                     ],
                   ],
                 ),
@@ -145,31 +172,101 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
             ],
           ),
           bottomNavigationBar: BottomActionBar(
-            child: Row(
-              children: [
-                Expanded(
-                  child: PillButton(
-                    label: s.addUtang,
-                    variant: PillVariant.outline,
+            child: customer.archived
+                ? PillButton(
+                    label: s.restore,
+                    icon: Icons.undo_rounded,
                     expand: true,
-                    onPressed: () => _showAmountSheet(context, session, customer, isPayment: false),
+                    loading: _busy,
+                    onPressed: () => _restore(session, customer),
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: PillButton(
+                              label: s.addUtang,
+                              variant: PillVariant.outline,
+                              expand: true,
+                              onPressed: () => _showAmountSheet(context, session, customer, isPayment: false),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpace.md),
+                          Expanded(
+                            child: PillButton(
+                              label: s.recordPayment,
+                              variant: PillVariant.outline,
+                              expand: true,
+                              onPressed: customer.balance > 0
+                                  ? () => _showAmountSheet(context, session, customer, isPayment: true)
+                                  : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (canMarkPaidUp) ...[
+                        const SizedBox(height: AppSpace.sm),
+                        PillButton(
+                          label: s.paidUp,
+                          icon: Icons.check_rounded,
+                          expand: true,
+                          loading: _busy,
+                          onPressed: () => _markPaidUp(session, customer),
+                        ),
+                      ],
+                    ],
                   ),
-                ),
-                const SizedBox(width: AppSpace.md),
-                Expanded(
-                  child: PillButton(
-                    label: s.recordPayment,
-                    expand: true,
-                    onPressed: customer.balance > 0
-                        ? () => _showAmountSheet(context, session, customer, isPayment: true)
-                        : null,
-                  ),
-                ),
-              ],
-            ),
           ),
         );
       },
+    );
+  }
+
+  Future<void> _markPaidUp(StoreSession session, Customer customer) async {
+    final s = context.s;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: s.paidUpTitle(customer.name),
+      message: customer.balance > 0 ? s.paidUpMessage(formatPeso(customer.balance)) : s.paidUpNoBalanceMessage,
+      confirmLabel: s.paidUp,
+    );
+    if (!confirmed || !mounted) return;
+    await _run(session.customerRepo.markPaidUp(customer), s.movedToArchive, leave: true);
+  }
+
+  Future<void> _restore(StoreSession session, Customer customer) {
+    return _run(session.customerRepo.restore(customer), context.s.customerRestored, leave: false);
+  }
+
+  Future<void> _remove(StoreSession session, Customer customer) async {
+    final s = context.s;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: s.removeCustomerTitle(customer.name),
+      message: s.removeCustomerMessage,
+      confirmLabel: s.removeCustomer,
+      destructive: true,
+    );
+    if (!confirmed || !mounted) return;
+    await _run(session.customerRepo.remove(customer), s.customerRemoved, leave: true);
+  }
+
+  /// Saves, then says what happened. [leave] closes this screen afterwards.
+  Future<void> _run(Future<Result<bool>> save, String done, {required bool leave}) async {
+    final s = context.s;
+    setState(() => _busy = true);
+    final result = await save;
+    if (!mounted) return;
+    setState(() => _busy = false);
+    result.when<void>(
+      ok: (synced) {
+        showMessage(context, synced ? done : s.savedOffline);
+        if (leave) Navigator.of(context).pop();
+      },
+      err: (error) => showMessage(context, describeError(s, error)),
     );
   }
 

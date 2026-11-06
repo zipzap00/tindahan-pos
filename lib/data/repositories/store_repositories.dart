@@ -24,16 +24,19 @@ class ExpenseRepository {
 
   Future<Result<bool>> add({
     required int amount,
-    required ExpenseCategory category,
+    required String category,
     required String dayKey,
     String note = '',
   }) {
     const context = '[expenses/add]';
-    if (amount <= 0) return Future.value(const Err(AppError(AppErrorCode.invalidInput, context: context)));
+    final label = category.trim();
+    if (amount <= 0 || label.isEmpty) {
+      return Future.value(const Err(AppError(AppErrorCode.invalidInput, context: context)));
+    }
     final batch = refs.db.batch();
     batch.set(refs.expenses.doc(), {
       'amount': amount,
-      'category': category.name,
+      'category': label,
       'note': note.trim(),
       'dayKey': dayKey,
       'monthKey': dayKey.substring(0, 7),
@@ -42,7 +45,7 @@ class ExpenseRepository {
       'createdAt': serverNow(),
     });
     bumpDailyStats(batch, refs, dayKey, {'expenses': increment(amount)});
-    addAudit(batch, refs, actor, AuditAction.expenseAdded, subject: category.name, amount: amount);
+    addAudit(batch, refs, actor, AuditAction.expenseAdded, subject: label, amount: amount);
     return commitBatch(batch, context);
   }
 
@@ -52,7 +55,7 @@ class ExpenseRepository {
     batch.delete(refs.expenses.doc(expense.id));
     bumpDailyStats(batch, refs, expense.dayKey, {'expenses': increment(-expense.amount)});
     addAudit(batch, refs, actor, AuditAction.expenseDeleted,
-        subject: expense.category.name, amount: expense.amount);
+        subject: expense.category, amount: expense.amount);
     return commitBatch(batch, context);
   }
 }

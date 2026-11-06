@@ -203,8 +203,42 @@ class _AuthGateState extends State<AuthGate> {
                 SessionFailed(:final error) => SessionErrorScreen(error: error),
                 SessionReady(:final session) => HomeShell(key: ObjectKey(session), isOwner: session.isOwner),
               };
-        return AnimatedSwitcher(duration: const Duration(milliseconds: 300), child: screen);
+        return ScreenSwitcher(identity: screen.key ?? screen.runtimeType, child: screen);
       },
+    );
+  }
+}
+
+/// Fades to [child] when [identity] changes; a rebuild with the same identity
+/// keeps the screen's state.
+///
+/// Signing in or out passes through several screens faster than the fade.
+/// Each change gets its own key, so screens fading out together never clash,
+/// even when the same screen comes back mid-fade.
+class ScreenSwitcher extends StatefulWidget {
+  const ScreenSwitcher({super.key, required this.identity, required this.child});
+
+  final Object identity;
+  final Widget child;
+
+  @override
+  State<ScreenSwitcher> createState() => _ScreenSwitcherState();
+}
+
+class _ScreenSwitcherState extends State<ScreenSwitcher> {
+  int _change = 0;
+
+  @override
+  void didUpdateWidget(ScreenSwitcher oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.identity != widget.identity) _change++;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: KeyedSubtree(key: ValueKey<int>(_change), child: widget.child),
     );
   }
 }

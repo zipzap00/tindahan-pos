@@ -374,9 +374,6 @@ class EnStrings extends Strings {
   String get customerNoteHint => 'e.g. Neighbour at the corner';
 
   @override
-  String get dashboardTitle => 'Today';
-
-  @override
   String get date => 'Date';
 
   @override
@@ -546,9 +543,6 @@ class EnStrings extends Strings {
 
   @override
   String get moreActions => 'More actions';
-
-  @override
-  String get moreTitle => 'More';
 
   @override
   String get netSales => 'Net sales';
@@ -1031,6 +1025,57 @@ class EnStrings extends Strings {
   String get utangTitle => 'Utang';
 
   @override
+  String get expenseCategoryHint => 'e.g. Electricity, Rent, Transport';
+
+  @override
+  String get customerRemoved => 'Name removed.';
+
+  @override
+  String get customerRestored => 'Customer is back on the utang list.';
+
+  @override
+  String get movedToArchive => 'Paid up. Moved to the archive.';
+
+  @override
+  String get nameOptional => 'Name (optional)';
+
+  @override
+  String get noArchivedCustomers => 'No paid-up customers yet.';
+
+  @override
+  String get paidUpNoBalanceMessage => 'They will move to the archive for 1 month.';
+
+  @override
+  String get removeCustomer => 'Remove name';
+
+  @override
+  String get removeCustomerMessage => 'They have no utang and no history, so nothing else changes.';
+
+  @override
+  String get utangArchiveCaption => 'Paid-up customers stay here for 1 month, then are removed automatically.';
+
+  @override
+  String get utangArchiveTitle => 'Paid-up archive';
+
+  @override
+  String archiveDates(String archived, String removal) => 'Paid up $archived · Removed on $removal';
+
+  @override
+  String customerCount(int count) => count == 1 ? '1 customer' : '$count customers';
+
+  @override
+  String paidUpMessage(String amount) => 'This records a $amount payment today and moves them to the archive for 1 month.';
+
+  @override
+  String paidUpTitle(String name) => 'Mark $name as paid up?';
+
+  @override
+  String removalDate(String date) => 'Removed from the archive on $date';
+
+  @override
+  String removeCustomerTitle(String name) => 'Remove $name?';
+
+  @override
   String get valueAtSellingPrice => 'Value at selling price';
 
   @override
@@ -1043,7 +1088,7 @@ class EnStrings extends Strings {
   String get welcomeEyebrow => 'For sari-sari stores';
 
   @override
-  String get welcomeHeadline => 'Sales, stock and utang in one app.';
+  String get welcomeHeadline => 'Busssssseng';
 
   @override
   String get welcomeLead => 'Know the capital and income on every item, even without internet.';
@@ -1134,9 +1179,6 @@ class EnStrings extends Strings {
 
   @override
   String outOfStockMessage(String name) => '$name is out of stock.';
-
-  @override
-  String payAmount(String amount) => 'Pay · $amount';
 
   @override
   String payFullBalance(String amount) => 'Full balance ($amount)';
@@ -1233,6 +1275,9 @@ class EnStrings extends Strings {
         AuditAction.saleCancelled => 'Sale cancelled',
         AuditAction.utangPayment => 'Utang payment',
         AuditAction.utangManualCharge => 'Utang added',
+        AuditAction.customerArchived => 'Customer archived',
+        AuditAction.customerRestored => 'Customer restored',
+        AuditAction.customerRemoved => 'Customer removed',
         AuditAction.expenseAdded => 'Expense added',
         AuditAction.expenseDeleted => 'Expense deleted',
         AuditAction.staffAdded => 'Cashier added',

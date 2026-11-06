@@ -9,6 +9,8 @@ class Customer {
     this.phone = '',
     this.note = '',
     this.archived = false,
+    this.archivedAt,
+    this.removed = false,
     this.lastActivityAt,
   });
 
@@ -21,6 +23,12 @@ class Customer {
   /// owes the customer (for example after a refund on a paid utang).
   final int balance;
   final bool archived;
+
+  /// When the customer was marked paid up.
+  final DateTime? archivedAt;
+
+  /// Added by mistake and taken off every list. The record stays in Firestore.
+  final bool removed;
   final DateTime? lastActivityAt;
 
   factory Customer.fromMap(String id, Map<String, dynamic> map) => Customer(
@@ -30,6 +38,8 @@ class Customer {
         note: readString(map['note']),
         balance: readInt(map['balance']),
         archived: readBool(map['archived']),
+        archivedAt: readDate(map['archivedAt']),
+        removed: readBool(map['removed']),
         lastActivityAt: readDate(map['lastActivityAt']),
       );
 }

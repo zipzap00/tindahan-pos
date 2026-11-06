@@ -32,10 +32,10 @@ Bottom navigation (owner): **Buod** (dashboard) · **Benta** (POS) · **Paninda*
 |---|---|
 | Auth | Loading screen with logo, Welcome (logo top-left), sign in, sign up, create store, access disabled, start-up error |
 | Dashboard | Today's sales, profit, transactions, expenses · stock counts (tap to open filtered inventory) · today/week/month summary · 7-day bars · best sellers · recent transactions |
-| POS | Product grid with search · cart sheet · checkout (cash with quick-cash and change, or utang) · receipt |
+| POS | Product grid with search · cart sheet with Cash or Utang · checkout (cash with quick-cash and change, or utang to a picked or new customer) · receipt |
 | Sales | History by day · sale detail with refund sheet and cancel |
 | Inventory | List with filters (all, low, out, archived), category, sort, value summary · product detail with profit preview and movements · product form (total or per-piece cost) · restock and adjust sheets · store-wide movements · export |
-| Utang | Customer list with balances · customer detail with ledger, payment and manual charge |
+| Utang | Customer list with balances · customer detail with ledger, payment, manual charge, Paid up and remove · paid-up archive (1 month) |
 | More | Expenses · staff · audit log · language · sign out |
 
 ## Core User Flows

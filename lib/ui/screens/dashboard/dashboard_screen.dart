@@ -20,6 +20,7 @@ import '../../widgets/layout.dart';
 import '../../widgets/pill_button.dart';
 import '../../widgets/states.dart';
 import '../../widgets/tags.dart';
+import '../expenses/expenses_screen.dart';
 import '../inventory/product_detail_screen.dart';
 import '../sales/sale_detail_screen.dart';
 import '../sales/sales_history_screen.dart';
@@ -121,6 +122,10 @@ class _DashboardBody extends StatelessWidget {
       shell?.goTo(ShellTab.inventory);
     }
 
+    void openSales() {
+      Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const SalesHistoryScreen()));
+    }
+
     return SafeArea(
       bottom: false,
       child: ListView(
@@ -128,8 +133,7 @@ class _DashboardBody extends StatelessWidget {
         children: [
           PageHeader(
             eyebrow: ManilaTime.formatLongDate(now, s),
-            title: s.dashboardTitle,
-            caption: session.storeName.value,
+            title: session.storeName.value ?? '',
             actions: const [
               Padding(
                 padding: EdgeInsets.only(top: AppSpace.sm, right: AppSpace.sm),
@@ -161,12 +165,16 @@ class _DashboardBody extends StatelessWidget {
                       label: s.todayProfit,
                       value: formatPeso(today.profit),
                       caption: s.afterExpenses(formatPeso(today.profitAfterExpenses)),
+                      onTap: openSales,
                     ),
                     right: StatTile(
                       icon: Icons.receipt_long_outlined,
                       label: s.todayExpenses,
                       value: formatPeso(today.expenses),
                       caption: today.restockCost > 0 ? s.restockSpend(formatPeso(today.restockCost)) : null,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(builder: (_) => const ExpensesScreen()),
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppSpace.md),
@@ -176,6 +184,7 @@ class _DashboardBody extends StatelessWidget {
                       label: s.todayTransactions,
                       value: '${today.transactions}',
                       caption: today.refunds > 0 ? s.refundsToday(formatPeso(today.refunds)) : null,
+                      onTap: openSales,
                     ),
                     right: StatTile(
                       icon: Icons.inventory_2_outlined,
@@ -540,7 +549,7 @@ class SaleRow extends StatelessWidget {
             : ManilaTime.formatTime(ManilaTime.toManila(created)));
     final payment = sale.paymentType == PaymentType.utang
         ? s.utangFor(sale.customerName ?? '')
-        : s.paymentCash;
+        : [s.paymentCash, if (sale.customerName != null) sale.customerName!].join(' · ');
     final Widget trailing = switch (sale.status) {
       SaleStatus.cancelled => TagPill(label: s.statusCancelled, tone: TagTone.error, icon: Icons.block_rounded),
       SaleStatus.refunded => TagPill(label: s.statusRefunded, tone: TagTone.neutral, icon: Icons.undo_rounded),

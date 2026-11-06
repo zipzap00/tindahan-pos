@@ -141,6 +141,7 @@ class _SaleDetailScreenState extends State<SaleDetailScreen> {
                     if (sale.paymentType == PaymentType.cash) ...[
                       StatRow(label: s.cashReceived, value: formatPeso(sale.amountPaid)),
                       StatRow(label: s.changeLabel, value: formatPeso(sale.change)),
+                      if (sale.customerName != null) StatRow(label: s.customer, value: sale.customerName!),
                     ] else
                       StatRow(label: s.customer, value: sale.customerName ?? ''),
                     if (sale.refundedAmount > 0)

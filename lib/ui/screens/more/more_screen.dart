@@ -56,9 +56,9 @@ class MoreScreen extends StatelessWidget {
               ListenableBuilder(
                 listenable: session.storeName,
                 builder: (context, _) => PageHeader(
-                  title: s.moreTitle,
+                  title: member.displayName,
                   eyebrow: session.storeName.value,
-                  caption: '${member.displayName} · ${isOwner ? s.roleOwner : s.roleCashier}',
+                  caption: isOwner ? s.roleOwner : s.roleCashier,
                 ),
               ),
               PagePadding(

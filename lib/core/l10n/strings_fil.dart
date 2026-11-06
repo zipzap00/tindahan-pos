@@ -374,9 +374,6 @@ class FilStrings extends Strings {
   String get customerNoteHint => 'Hal. Kapitbahay sa kanto';
 
   @override
-  String get dashboardTitle => 'Ngayong araw';
-
-  @override
   String get date => 'Petsa';
 
   @override
@@ -546,9 +543,6 @@ class FilStrings extends Strings {
 
   @override
   String get moreActions => 'Iba pang aksyon';
-
-  @override
-  String get moreTitle => 'Iba pa';
 
   @override
   String get netSales => 'Netong benta';
@@ -1031,6 +1025,57 @@ class FilStrings extends Strings {
   String get utangTitle => 'Utang';
 
   @override
+  String get expenseCategoryHint => 'Hal. Kuryente, Upa, Pamasahe';
+
+  @override
+  String get customerRemoved => 'Natanggal ang pangalan.';
+
+  @override
+  String get customerRestored => 'Nasa listahan na ulit ng utang.';
+
+  @override
+  String get movedToArchive => 'Bayad na. Nailipat sa archive.';
+
+  @override
+  String get nameOptional => 'Pangalan (opsyonal)';
+
+  @override
+  String get noArchivedCustomers => 'Wala pang bayad na customer.';
+
+  @override
+  String get paidUpNoBalanceMessage => 'Ililipat sila sa archive nang 1 buwan.';
+
+  @override
+  String get removeCustomer => 'Tanggalin ang pangalan';
+
+  @override
+  String get removeCustomerMessage => 'Wala silang utang at history, kaya walang ibang mababago.';
+
+  @override
+  String get utangArchiveCaption => 'Nandito ang mga bayad na nang 1 buwan, tapos kusa silang matatanggal.';
+
+  @override
+  String get utangArchiveTitle => 'Archive ng bayad na';
+
+  @override
+  String archiveDates(String archived, String removal) => 'Nabayaran $archived · Matatanggal sa $removal';
+
+  @override
+  String customerCount(int count) => '$count customer';
+
+  @override
+  String paidUpMessage(String amount) => 'Itatala nito ang bayad na $amount ngayon at ililipat sila sa archive nang 1 buwan.';
+
+  @override
+  String paidUpTitle(String name) => 'Bayad na ba si $name?';
+
+  @override
+  String removalDate(String date) => 'Matatanggal sa archive sa $date';
+
+  @override
+  String removeCustomerTitle(String name) => 'Tanggalin si $name?';
+
+  @override
   String get valueAtSellingPrice => 'Halaga kung maibenta';
 
   @override
@@ -1043,7 +1088,7 @@ class FilStrings extends Strings {
   String get welcomeEyebrow => 'Para sa sari-sari store';
 
   @override
-  String get welcomeHeadline => 'Benta, paninda at utang sa isang app.';
+  String get welcomeHeadline => 'Busssssseng';
 
   @override
   String get welcomeLead => 'Alamin ang puhunan at kita ng bawat paninda, kahit walang internet.';
@@ -1134,9 +1179,6 @@ class FilStrings extends Strings {
 
   @override
   String outOfStockMessage(String name) => 'Ubos na ang $name.';
-
-  @override
-  String payAmount(String amount) => 'Bayaran · $amount';
 
   @override
   String payFullBalance(String amount) => 'Buong balanse ($amount)';
@@ -1233,6 +1275,9 @@ class FilStrings extends Strings {
         AuditAction.saleCancelled => 'Kinanselang benta',
         AuditAction.utangPayment => 'Bayad sa utang',
         AuditAction.utangManualCharge => 'Dagdag utang',
+        AuditAction.customerArchived => 'Na-archive ang customer',
+        AuditAction.customerRestored => 'Naibalik ang customer',
+        AuditAction.customerRemoved => 'Tinanggal ang customer',
         AuditAction.expenseAdded => 'Bagong gastos',
         AuditAction.expenseDeleted => 'Binurang gastos',
         AuditAction.staffAdded => 'Bagong cashier',

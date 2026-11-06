@@ -11,6 +11,7 @@ import '../../../data/store_session.dart';
 import '../../scopes.dart';
 import '../../widgets/cards.dart';
 import '../../widgets/layout.dart';
+import '../../widgets/pill_button.dart';
 import '../../widgets/states.dart';
 import '../dashboard/dashboard_screen.dart' show SaleRow;
 
@@ -48,13 +49,25 @@ class _SalesHistoryScreenState extends State<SalesHistoryScreen> {
     _stats = LiveQuery<DailyStats>(() => session.insights.watchDay(key), context: '[sales/dayStats]');
   }
 
-  void _moveDay(int days) {
-    final next = _day.add(Duration(days: days));
+  void _showDay(DateTime next) {
     if (next.isAfter(ManilaTime.startOfDay(ManilaTime.now()))) return;
     setState(() {
       _day = next;
       _open();
     });
+  }
+
+  void _moveDay(int days) => _showDay(_day.add(Duration(days: days)));
+
+  Future<void> _pickDay() async {
+    final today = ManilaTime.startOfDay(ManilaTime.now());
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(_day.year, _day.month, _day.day),
+      firstDate: DateTime(today.year - 5),
+      lastDate: DateTime(today.year, today.month, today.day),
+    );
+    if (picked != null && mounted) _showDay(DateTime.utc(picked.year, picked.month, picked.day));
   }
 
   @override
@@ -92,10 +105,12 @@ class _SalesHistoryScreenState extends State<SalesHistoryScreen> {
                     onPressed: () => _moveDay(-1),
                   ),
                   Expanded(
-                    child: Text(
-                      isToday ? s.todayWithDate(ManilaTime.formatDate(_day, s)) : ManilaTime.formatLongDate(_day, s),
-                      style: AppType.bodyStrong,
-                      textAlign: TextAlign.center,
+                    child: PillButton(
+                      label: isToday ? s.todayWithDate(ManilaTime.formatDate(_day, s)) : ManilaTime.formatLongDate(_day, s),
+                      icon: Icons.calendar_today_outlined,
+                      variant: PillVariant.ghost,
+                      expand: true,
+                      onPressed: _pickDay,
                     ),
                   ),
                   IconButton(

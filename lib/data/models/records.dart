@@ -20,7 +20,9 @@ class Expense {
 
   final String id;
   final int amount;
-  final ExpenseCategory category;
+  /// What the owner typed. Older expenses hold an [ExpenseCategory] name; show
+  /// it with `expenseCategoryLabelByName`.
+  final String category;
   final String dayKey;
   final String byName;
   final String note;
@@ -29,10 +31,7 @@ class Expense {
   factory Expense.fromMap(String id, Map<String, dynamic> map) => Expense(
         id: id,
         amount: readInt(map['amount']),
-        category: ExpenseCategory.values.firstWhere(
-          (value) => value.name == readString(map['category']),
-          orElse: () => ExpenseCategory.other,
-        ),
+        category: readString(map['category']),
         dayKey: readString(map['dayKey']),
         byName: readString(map['byName']),
         note: readString(map['note']),
@@ -231,6 +230,9 @@ enum AuditAction {
   saleCancelled,
   utangPayment,
   utangManualCharge,
+  customerArchived,
+  customerRestored,
+  customerRemoved,
   expenseAdded,
   expenseDeleted,
   staffAdded,

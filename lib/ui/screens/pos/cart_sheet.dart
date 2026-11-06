@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/l10n/language.dart';
 import '../../../core/money.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../data/models/sale.dart';
 import '../../../data/store_session.dart';
 import '../../scopes.dart';
 import '../../widgets/dialogs.dart';
@@ -15,9 +16,11 @@ import 'checkout_screen.dart';
 Future<void> showCartSheet(BuildContext context) async {
   final session = StoreScope.of(context);
   session.cart.syncWith(session.productsById);
-  final goToCheckout = await showAppSheet<bool>(context, builder: (_) => _CartSheet(session: session));
-  if (goToCheckout == true && context.mounted) {
-    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CheckoutScreen()));
+  final payment = await showAppSheet<PaymentType>(context, builder: (_) => _CartSheet(session: session));
+  if (payment != null && context.mounted) {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => CheckoutScreen(initialPayment: payment)),
+    );
   }
 }
 
@@ -154,10 +157,27 @@ class _CartSheet extends StatelessWidget {
                   children: [
                     StatRow(label: s.itemCount(cart.itemCount), value: formatPeso(cart.total), emphasize: true),
                     const SizedBox(height: AppSpace.md),
-                    PillButton(
-                      label: s.payAmount(formatPeso(cart.total)),
-                      expand: true,
-                      onPressed: problems.isEmpty ? () => Navigator.of(context).pop(true) : null,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: PillButton(
+                            label: s.paymentUtang,
+                            icon: Icons.menu_book_outlined,
+                            variant: PillVariant.outline,
+                            expand: true,
+                            onPressed: problems.isEmpty ? () => Navigator.of(context).pop(PaymentType.utang) : null,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpace.md),
+                        Expanded(
+                          child: PillButton(
+                            label: s.paymentCash,
+                            icon: Icons.payments_outlined,
+                            expand: true,
+                            onPressed: problems.isEmpty ? () => Navigator.of(context).pop(PaymentType.cash) : null,
+                          ),
+                        ),
+                      ],
                     ),
                     if (problems.isNotEmpty) ...[
                       const SizedBox(height: AppSpace.sm),

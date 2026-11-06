@@ -12,6 +12,7 @@ import '../../widgets/states.dart';
 import '../../widgets/tags.dart';
 import 'customer_detail_screen.dart';
 import 'customer_picker.dart';
+import 'utang_archive_screen.dart';
 
 /// Utang notebook: who owes how much.
 class UtangScreen extends StatefulWidget {
@@ -127,6 +128,20 @@ class _UtangScreenState extends State<UtangScreen> {
                             ),
                         ],
                       ),
+                    const SizedBox(height: AppSpace.lg),
+                    ListCard(
+                      children: [
+                        ListRow(
+                          leading: const Icon(Icons.inventory_2_outlined),
+                          title: s.utangArchiveTitle,
+                          subtitle: s.customerCount(archivedCustomers(session).length),
+                          trailing: const Icon(Icons.chevron_right_rounded),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(builder: (_) => const UtangArchiveScreen()),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),

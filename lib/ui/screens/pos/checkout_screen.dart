@@ -19,7 +19,10 @@ import 'receipt_screen.dart';
 
 /// Payment: cash with change, or utang charged to a customer.
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key});
+  const CheckoutScreen({super.key, this.initialPayment = PaymentType.cash});
+
+  /// The payment chosen in the cart.
+  final PaymentType initialPayment;
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -27,13 +30,25 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final _cash = TextEditingController();
-  PaymentType _payment = PaymentType.cash;
+  final _buyerName = TextEditingController();
+  late PaymentType _payment = widget.initialPayment;
   Customer? _customer;
   bool _busy = false;
 
   @override
+  void initState() {
+    super.initState();
+    if (_payment == PaymentType.utang) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _pickCustomer();
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _cash.dispose();
+    _buyerName.dispose();
     super.dispose();
   }
 
@@ -58,6 +73,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         paymentType: _payment,
         amountPaid: parsePesoToCents(_cash.text) ?? 0,
         customer: _payment == PaymentType.utang ? freshCustomer : null,
+        buyerName: _payment == PaymentType.cash ? _buyerName.text : '',
       ),
       latest,
     );
@@ -130,7 +146,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 selected: _payment,
                 labelOf: (type) => type == PaymentType.cash ? s.paymentCash : s.paymentUtang,
                 iconOf: (type) => type == PaymentType.cash ? Icons.payments_outlined : Icons.menu_book_outlined,
-                onSelected: (type) => setState(() => _payment = type),
+                onSelected: (type) {
+                  setState(() => _payment = type);
+                  if (type == PaymentType.utang && _customer == null) _pickCustomer();
+                },
               ),
               const SizedBox(height: AppSpace.xl),
               if (isCash) ...[
@@ -178,6 +197,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     message: s.cashShort(formatPeso(-change)),
                   ),
                 ],
+                const SizedBox(height: AppSpace.lg),
+                AppTextField(
+                  label: s.nameOptional,
+                  controller: _buyerName,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.done,
+                ),
               ] else ...[
                 AppCard(
                   onTap: _pickCustomer,

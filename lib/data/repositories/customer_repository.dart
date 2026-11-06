@@ -89,6 +89,66 @@ class CustomerRepository {
     return commitBatch(batch, context);
   }
 
+  /// Settles whatever is still owed and moves the customer to the archive.
+  Future<Result<bool>> markPaidUp(Customer customer) {
+    const context = '[customers/paidUp]';
+    final owed = customer.balance;
+    if (owed < 0) return Future.value(const Err(AppError(AppErrorCode.invalidInput, context: context)));
+    final batch = refs.db.batch();
+    batch.update(refs.customers.doc(customer.id), {
+      if (owed > 0) 'balance': increment(-owed),
+      'archived': true,
+      'archivedAt': serverNow(),
+      'lastActivityAt': serverNow(),
+    });
+    if (owed > 0) {
+      batch.set(refs.ledger(customer.id).doc(), {
+        'type': LedgerType.payment.name,
+        'amount': owed,
+        'balanceAfter': 0,
+        'saleId': '',
+        'receiptNo': '',
+        'note': '',
+        'byUid': actor.uid,
+        'byName': actor.name,
+        'createdAt': serverNow(),
+      });
+      bumpDailyStats(batch, refs, ManilaTime.todayKey(), {'utangCollected': increment(owed)});
+      addAudit(batch, refs, actor, AuditAction.utangPayment, subject: customer.name, amount: owed);
+    }
+    addAudit(batch, refs, actor, AuditAction.customerArchived, subject: customer.name);
+    return commitBatch(batch, context);
+  }
+
+  /// Puts an archived customer back on the utang list.
+  Future<Result<bool>> restore(Customer customer) {
+    const context = '[customers/restore]';
+    final batch = refs.db.batch();
+    batch.update(refs.customers.doc(customer.id), {
+      'archived': false,
+      'archivedAt': null,
+      'lastActivityAt': serverNow(),
+    });
+    addAudit(batch, refs, actor, AuditAction.customerRestored, subject: customer.name);
+    return commitBatch(batch, context);
+  }
+
+  /// Takes a name added by mistake off every list. The screen only offers
+  /// this for a customer with no balance and no history. The document stays,
+  /// because the rules never allow deleting a customer.
+  Future<Result<bool>> remove(Customer customer) {
+    const context = '[customers/remove]';
+    if (customer.balance != 0) return Future.value(const Err(AppError(AppErrorCode.invalidInput, context: context)));
+    final batch = refs.db.batch();
+    batch.update(refs.customers.doc(customer.id), {
+      'archived': true,
+      'removed': true,
+      'lastActivityAt': serverNow(),
+    });
+    addAudit(batch, refs, actor, AuditAction.customerRemoved, subject: customer.name);
+    return commitBatch(batch, context);
+  }
+
   /// Old debt written down from a notebook, or credit given outside the POS.
   Future<Result<bool>> recordManualCharge(Customer customer, {required int amount, required String note}) {
     const context = '[customers/charge]';

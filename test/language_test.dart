@@ -7,6 +7,18 @@ import 'package:tindahan_pos/core/l10n/strings_fil.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  group('expense categories', () {
+    test('older stored categories still show translated', () {
+      expect(const EnStrings().expenseCategoryLabelByName('electricity'), 'Electricity');
+      expect(const FilStrings().expenseCategoryLabelByName('electricity'), 'Kuryente');
+    });
+
+    test('a typed category shows exactly as typed', () {
+      expect(const EnStrings().expenseCategoryLabelByName('Gas sa tricycle'), 'Gas sa tricycle');
+      expect(const FilStrings().expenseCategoryLabelByName('Gas sa tricycle'), 'Gas sa tricycle');
+    });
+  });
+
   group('language', () {
     test('English is the default when nothing is saved', () async {
       SharedPreferences.setMockInitialValues({});

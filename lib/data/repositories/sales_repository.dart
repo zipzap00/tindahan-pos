@@ -20,6 +20,7 @@ class CheckoutRequest {
     required this.paymentType,
     required this.amountPaid,
     this.customer,
+    this.buyerName = '',
   });
 
   final List<CartLine> lines;
@@ -28,6 +29,9 @@ class CheckoutRequest {
   /// Cash received, in centavos. Ignored for utang.
   final int amountPaid;
   final Customer? customer;
+
+  /// Optional name on a cash sale. Utang uses [customer] instead.
+  final String buyerName;
 }
 
 class SaleOutcome {
@@ -117,6 +121,8 @@ class SalesRepository {
     final profit = items.fold<double>(0, (sum, item) => sum + item.lineProfit);
     final amountPaid = isUtang ? 0 : request.amountPaid;
     final change = isUtang ? 0 : request.amountPaid - total;
+    final buyerName = request.buyerName.trim();
+    final saleName = isUtang ? customer?.name : (buyerName.isEmpty ? null : buyerName);
 
     final batch = refs.db.batch();
     batch.set(saleRef, {
@@ -133,7 +139,7 @@ class SalesRepository {
       'change': change,
       'paymentType': request.paymentType.name,
       if (customer != null) 'customerId': customer.id,
-      if (customer != null) 'customerName': customer.name,
+      if (saleName != null) 'customerName': saleName,
       'status': SaleStatus.completed.name,
       'profit': profit,
       'refundedAmount': 0,
@@ -215,7 +221,7 @@ class SalesRepository {
       status: SaleStatus.completed,
       profit: profit,
       customerId: customer?.id,
-      customerName: customer?.name,
+      customerName: saleName,
       createdAt: DateTime.now(),
     );
 

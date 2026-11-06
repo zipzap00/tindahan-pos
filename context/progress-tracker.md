@@ -54,6 +54,7 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 ### Phase 4: POS and Sales
 - [x] Product grid, search, exact-code add
 - [x] Cart with stock limits, checkout (cash and utang), receipt
+- [x] Cart offers Cash or Utang directly; choosing Utang opens the customer picker (pick or add a customer)
 - [x] Stock re-check before save, rules block negative stock
 - [x] Sales history and detail
 - [x] Refunds (restock or write-off) and cancel, with audit
@@ -61,6 +62,8 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 ### Phase 5: Dashboard, Utang, Expenses, Staff
 - [x] Dashboard from `dailyStats`
 - [x] Customers, ledger, payments, manual charges
+- [x] Paid up button, paid-up archive with 1-month expiry and Restore, remove a name added by mistake
+- [x] Optional name on cash sales
 - [x] Expenses
 - [x] Cashier accounts, enable/disable, audit log
 
@@ -103,6 +106,14 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 - English is the default language (changed 2026-11-03, was Taglish); Filipino (Taglish) stays selectable under More → Language and on the welcome screen. A saved choice of Filipino is kept.
 - Export is CSV with UTF-8 BOM (opens in Excel) rather than native `.xlsx`.
 - Cashiers created through a secondary FirebaseApp so the owner stays signed in.
+- Utang from the cart (2026-11-06, owner's request): the cart's Pay button became Cash and Utang buttons, so credit sales go through checkout and count in sales, stock and daily stats. The checkout, ledger and rules were already correct, so only the UI changed. Manual "Add utang" on the customer screen is kept until the owner decides, because it is the only way to enter old notebook debts.
+- Utang archive (2026-11-06, owner's request): Paid up records any balance left as a payment and archives the customer in one batch. The archive lists them until one calendar month later (`archiveRemovalDate`), checked when the list is drawn, so no server job is needed. "Removed" means hidden: the customer, ledger and sales stay in Firestore, because the rules forbid deleting customers and sales still point at them. A customer with a non-zero balance stays listed past the month. After the month a returning customer is added as a new name.
+- Remove name (2026-11-06, owner's request): offered only with ₱0 balance and no ledger entries, and sets `removed: true` rather than deleting, so no rules change or deploy was needed. Cashiers can use Paid up and Remove, as they can already record payments.
+- Cash sales may carry an optional name in `customerName` with no `customerId`, so it never touches a utang balance.
+- Screen fades use `ScreenSwitcher` in `app.dart`, not a bare `AnimatedSwitcher`: signing in passes through two unkeyed screens into keyed `HomeShell` within the fade, which threw "Duplicate keys found". Each screen change now gets its own key (`test/screen_switcher_test.dart`).
+- Welcome headline is "Busssssseng" in both languages (2026-11-06, owner's request).
+- Expense category is typed by hand (2026-11-06, owner's request), required, stored as text. Older expenses keep their enum names and still show translated through `expenseCategoryLabelByName`.
+- Dashboard and More polish (2026-11-06, owner request): all four dashboard tiles open a page (profit and transactions go to Sales, as there is no separate profit page); the Sales date opens a calendar; the Summary header shows the store name and the More header shows the member name instead of the words Today and More.
 - Google sign-in uses `FirebaseAuth.signInWithProvider(GoogleAuthProvider())` (Firebase's browser flow), not the `google_sign_in` package: no new dependency. Needs the Google provider on in the console, the Android SHA-1/SHA-256 registered (debug key done; add the release key before publishing) and the iOS encoded-App-ID URL scheme in `Info.plist` (done). Cashiers still sign in with the email and password the owner set.
 - Web added for testing in Chrome (`flutter run -d chrome`): Firebase web app registered, Google sign-in uses `signInWithPopup` on web, CSV export shares in-memory data (`XFile.fromData`) so it works on phones and downloads in the browser; `path_provider` removed.
 - **Iba pa → Aking account** (owners and cashiers): name, email, sign-in method (Google / email and password), role, store. Email-and-password logins can change their password after re-entering the current one (`reauthenticateWithCredential` then `updatePassword`), or send a reset email. Google-only logins see a note that their password is managed by Google. Passwords are never shown: Firebase keeps only a one-way hash.
@@ -110,6 +121,8 @@ share_plus resolved 11.1.0. Newer majors exist (firebase_core 5, cloud_firestore
 - Android `minSdk` left at `flutter.minSdkVersion` (the Flutter 3.44 default already meets firebase_auth's 23). App label is "Tindahan" on Android and iOS.
 
 ## Open Questions
+
+- Known bug: right after creating a store, lists that start before the server saves the membership show "You do not have permission for this" (Summary, Products, Utang) until Try again. Seen 2026-11-06. Only the first session of a new store.
 
 - Should cost fields move to an owner-only subcollection so cashiers cannot read them through the API?
 - Add camera barcode scanning (e.g. `mobile_scanner`)?

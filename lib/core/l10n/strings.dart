@@ -133,7 +133,6 @@ abstract class Strings {
   String get customerName;
   String get customerNotFound;
   String get customerNoteHint;
-  String get dashboardTitle;
   String get date;
   String get decreaseQty;
   String get deductFromUtang;
@@ -191,7 +190,6 @@ abstract class Strings {
   String get minStockHelper;
   String get minStockLevel;
   String get moreActions;
-  String get moreTitle;
   String get netSales;
   String get newAverageCost;
   String get newBalanceLabel;
@@ -352,6 +350,23 @@ abstract class Strings {
   String get utangHistory;
   String get utangSummary;
   String get utangTitle;
+  String get expenseCategoryHint;
+  String get customerRemoved;
+  String get customerRestored;
+  String get movedToArchive;
+  String get nameOptional;
+  String get noArchivedCustomers;
+  String get paidUpNoBalanceMessage;
+  String get removeCustomer;
+  String get removeCustomerMessage;
+  String get utangArchiveCaption;
+  String get utangArchiveTitle;
+  String archiveDates(String archived, String removal);
+  String customerCount(int count);
+  String paidUpMessage(String amount);
+  String paidUpTitle(String name);
+  String removalDate(String date);
+  String removeCustomerTitle(String name);
   String get valueAtSellingPrice;
   String get valueLost;
   String get viewCart;
@@ -387,7 +402,6 @@ abstract class Strings {
   String notEnoughStockFor(String names);
   String onlyNInStock(int count, String name);
   String outOfStockMessage(String name);
-  String payAmount(String amount);
   String payFullBalance(String amount);
   String paymentOverBalance(String amount);
   String piecesSold(int count);
