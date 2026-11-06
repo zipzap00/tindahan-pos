@@ -21,7 +21,7 @@ class StoreSession {
   StoreSession({required FirebaseFirestore db, required this.storeId, required Member member})
       : refs = StoreRefs(db, storeId),
         member = ValueNotifier<Member>(member) {
-    final actor = Actor(uid: member.uid, name: member.displayName);
+    actor = Actor(uid: member.uid, name: member.displayName);
     catalog = CatalogRepository(refs, actor);
     sales = SalesRepository(refs, actor);
     customerRepo = CustomerRepository(refs, actor);
@@ -39,6 +39,9 @@ class StoreSession {
   final String storeId;
   final StoreRefs refs;
   final ValueNotifier<Member> member;
+
+  /// Shared by every repository, so a changed name reaches new records at once.
+  late final Actor actor;
 
   late final CatalogRepository catalog;
   late final SalesRepository sales;
@@ -68,7 +71,10 @@ class StoreSession {
     return null;
   }
 
-  void updateMember(Member value) => member.value = value;
+  void updateMember(Member value) {
+    actor.name = value.displayName;
+    member.value = value;
+  }
 
   void dispose() {
     products.dispose();

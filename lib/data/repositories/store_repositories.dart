@@ -105,6 +105,30 @@ class StaffRepository {
     });
   }
 
+  /// Changes the signed-in member's own name. Past sales keep the old name,
+  /// because they record who made them at the time.
+  Future<Result<bool>> renameMe(String oldName, String newName) {
+    const context = '[staff/renameMe]';
+    final name = newName.trim();
+    if (name.isEmpty) return Future.value(const Err(AppError(AppErrorCode.invalidInput, context: context)));
+    final batch = refs.db.batch();
+    batch.update(refs.members.doc(actor.uid), {'displayName': name});
+    batch.update(refs.db.collection('users').doc(actor.uid), {'displayName': name});
+    addAudit(batch, refs, actor, AuditAction.memberRenamed, subject: name, note: oldName);
+    return commitBatch(batch, context);
+  }
+
+  /// Owner only: the rules refuse this for cashiers.
+  Future<Result<bool>> renameStore(String oldName, String newName) {
+    const context = '[staff/renameStore]';
+    final name = newName.trim();
+    if (name.isEmpty) return Future.value(const Err(AppError(AppErrorCode.invalidInput, context: context)));
+    final batch = refs.db.batch();
+    batch.update(refs.store, {'name': name});
+    addAudit(batch, refs, actor, AuditAction.storeRenamed, subject: name, note: oldName);
+    return commitBatch(batch, context);
+  }
+
   /// Creates a cashier sign-in. A second Firebase app instance is used so the
   /// owner stays signed in while the new account is created.
   Future<Result<bool>> createCashier({

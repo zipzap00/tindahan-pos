@@ -350,6 +350,10 @@ abstract class Strings {
   String get utangHistory;
   String get utangSummary;
   String get utangTitle;
+  String get editName;
+  String get editStoreName;
+  String get nameUpdated;
+  String get storeNameUpdated;
   String get emailConfirmedButton;
   String get emailNotConfirmedYet;
   String get resendEmail;

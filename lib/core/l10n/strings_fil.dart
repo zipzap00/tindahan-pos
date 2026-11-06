@@ -1025,6 +1025,18 @@ class FilStrings extends Strings {
   String get utangTitle => 'Utang';
 
   @override
+  String get editName => 'Palitan ang pangalan';
+
+  @override
+  String get editStoreName => 'Palitan ang pangalan ng tindahan';
+
+  @override
+  String get nameUpdated => 'Napalitan ang pangalan.';
+
+  @override
+  String get storeNameUpdated => 'Napalitan ang pangalan ng tindahan.';
+
+  @override
   String get emailConfirmedButton => 'Nabuksan ko na ang link';
 
   @override
@@ -1296,6 +1308,8 @@ class FilStrings extends Strings {
         AuditAction.customerArchived => 'Na-archive ang customer',
         AuditAction.customerRestored => 'Naibalik ang customer',
         AuditAction.customerRemoved => 'Tinanggal ang customer',
+        AuditAction.memberRenamed => 'Pinalitan ang pangalan',
+        AuditAction.storeRenamed => 'Pinalitan ang pangalan ng tindahan',
         AuditAction.expenseAdded => 'Bagong gastos',
         AuditAction.expenseDeleted => 'Binurang gastos',
         AuditAction.staffAdded => 'Bagong cashier',

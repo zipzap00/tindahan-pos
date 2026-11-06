@@ -50,6 +50,15 @@ class AccountScreen extends StatelessWidget {
                           leading: const Icon(Icons.person_outline_rounded),
                           title: member.displayName,
                           subtitle: s.accountName,
+                          trailing: const Icon(Icons.edit_outlined),
+                          onTap: () => _edit(
+                            context,
+                            title: s.editName,
+                            label: s.accountName,
+                            initial: member.displayName,
+                            done: s.nameUpdated,
+                            save: (name) => session.staff.renameMe(member.displayName, name),
+                          ),
                         ),
                         ListRow(
                           leading: const Icon(Icons.mail_outline_rounded),
@@ -73,6 +82,21 @@ class AccountScreen extends StatelessWidget {
                             leading: const Icon(Icons.storefront_outlined),
                             title: session.storeName.value ?? '',
                             subtitle: s.accountStore,
+                            // The rules let only the owner change the store.
+                            trailing: member.isOwner ? const Icon(Icons.edit_outlined) : null,
+                            onTap: member.isOwner
+                                ? () {
+                                    final current = session.storeName.value ?? '';
+                                    _edit(
+                                      context,
+                                      title: s.editStoreName,
+                                      label: s.storeName,
+                                      initial: current,
+                                      done: s.storeNameUpdated,
+                                      save: (name) => session.staff.renameStore(current, name),
+                                    );
+                                  }
+                                : null,
                           ),
                         ),
                       ],
@@ -88,6 +112,110 @@ class AccountScreen extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+void _edit(
+  BuildContext context, {
+  required String title,
+  required String label,
+  required String initial,
+  required String done,
+  required Future<Result<bool>> Function(String name) save,
+}) {
+  showAppSheet<void>(
+    context,
+    builder: (_) => _EditNameSheet(title: title, label: label, initial: initial, done: done, save: save),
+  );
+}
+
+class _EditNameSheet extends StatefulWidget {
+  const _EditNameSheet({
+    required this.title,
+    required this.label,
+    required this.initial,
+    required this.done,
+    required this.save,
+  });
+
+  final String title;
+  final String label;
+  final String initial;
+  final String done;
+  final Future<Result<bool>> Function(String name) save;
+
+  @override
+  State<_EditNameSheet> createState() => _EditNameSheetState();
+}
+
+class _EditNameSheetState extends State<_EditNameSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _name = TextEditingController(text: widget.initial);
+  bool _busy = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final s = context.s;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    final name = _name.text.trim();
+    if (name == widget.initial) {
+      Navigator.of(context).pop();
+      return;
+    }
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    final result = await widget.save(name);
+    if (!mounted) return;
+    setState(() => _busy = false);
+    result.when<void>(
+      ok: (synced) {
+        showMessage(context, synced ? widget.done : s.savedOffline);
+        Navigator.of(context).pop();
+      },
+      err: (error) => setState(() => _error = describeError(s, error)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = context.s;
+    final error = _error;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(AppSpace.xl, 0, AppSpace.xl, AppSpace.xl),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(widget.title, style: AppType.subhead),
+            const SizedBox(height: AppSpace.lg),
+            AppTextField(
+              label: widget.label,
+              controller: _name,
+              autofocus: true,
+              textCapitalization: TextCapitalization.words,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _save(),
+              validator: (value) => (value ?? '').trim().isEmpty ? s.required : null,
+            ),
+            if (error != null) ...[
+              const SizedBox(height: AppSpace.lg),
+              InlineNotice(message: error, tone: NoticeTone.warning),
+            ],
+            const SizedBox(height: AppSpace.xl),
+            PillButton(label: s.save, onPressed: _save, loading: _busy, expand: true),
+          ],
+        ),
       ),
     );
   }

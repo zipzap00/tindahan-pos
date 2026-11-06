@@ -233,6 +233,8 @@ enum AuditAction {
   customerArchived,
   customerRestored,
   customerRemoved,
+  memberRenamed,
+  storeRenamed,
   expenseAdded,
   expenseDeleted,
   staffAdded,

@@ -1025,6 +1025,18 @@ class EnStrings extends Strings {
   String get utangTitle => 'Utang';
 
   @override
+  String get editName => 'Edit name';
+
+  @override
+  String get editStoreName => 'Edit store name';
+
+  @override
+  String get nameUpdated => 'Name updated.';
+
+  @override
+  String get storeNameUpdated => 'Store name updated.';
+
+  @override
   String get emailConfirmedButton => 'I opened the link';
 
   @override
@@ -1296,6 +1308,8 @@ class EnStrings extends Strings {
         AuditAction.customerArchived => 'Customer archived',
         AuditAction.customerRestored => 'Customer restored',
         AuditAction.customerRemoved => 'Customer removed',
+        AuditAction.memberRenamed => 'Name changed',
+        AuditAction.storeRenamed => 'Store name changed',
         AuditAction.expenseAdded => 'Expense added',
         AuditAction.expenseDeleted => 'Expense deleted',
         AuditAction.staffAdded => 'Cashier added',

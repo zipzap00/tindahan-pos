@@ -75,10 +75,14 @@ service cloud.firestore {
             && storeAfter(storeId).data.ownerUid == request.auth.uid)
           || (isOwner(storeId) && request.resource.data.role == 'cashier')
         );
-        // Owners manage cashiers; nobody can change their own role or access.
-        allow update: if isOwner(storeId)
-          && uid != request.auth.uid
-          && request.resource.data.role == 'cashier';
+        // Owners manage cashiers; nobody can change their own role or access,
+        // only their own display name.
+        allow update: if (isOwner(storeId)
+            && uid != request.auth.uid
+            && request.resource.data.role == 'cashier')
+          || (uid == request.auth.uid
+            && isMember(storeId)
+            && changedOnly(['displayName']));
         allow delete: if false;
       }
 

@@ -14,10 +14,12 @@ typedef Json = Map<String, dynamic>;
 
 /// Who is acting. Stored on records as uid plus display name.
 class Actor {
-  const Actor({required this.uid, required this.name});
+  Actor({required this.uid, required this.name});
 
   final String uid;
-  final String name;
+
+  /// Changes when the member edits their name in My account.
+  String name;
 }
 
 /// All collections for one store live under stores/{storeId}.
