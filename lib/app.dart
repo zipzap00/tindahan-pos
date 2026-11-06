@@ -198,6 +198,7 @@ class _AuthGateState extends State<AuthGate> {
             : switch (state) {
                 SessionLoading() => const SplashScreen(),
                 SignedOut() => const WelcomeScreen(),
+                NeedsEmailVerification(:final user) => VerifyEmailScreen(email: user.email ?? ''),
                 NeedsStore(:final user) => CreateStoreScreen(user: user),
                 AccessDisabled() => const AccessDisabledScreen(),
                 SessionFailed(:final error) => SessionErrorScreen(error: error),

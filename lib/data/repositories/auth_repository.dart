@@ -62,6 +62,21 @@ class AuthRepository {
     const context = '[auth/createAccount]';
     try {
       await auth.createUserWithEmailAndPassword(email: email.trim(), password: password);
+    } catch (error, stack) {
+      logError(context, error, stack);
+      return Err(mapError(error, context));
+    }
+    // The account exists now; if this send fails, the next screen can resend.
+    await sendVerificationEmail();
+    return const Ok(true);
+  }
+
+  /// Sends the link that proves the owner can read this inbox. Nothing can
+  /// tell whether an address exists, so this is the only real check.
+  Future<Result<bool>> sendVerificationEmail() async {
+    const context = '[auth/sendVerification]';
+    try {
+      await auth.currentUser?.sendEmailVerification();
       return const Ok(true);
     } catch (error, stack) {
       logError(context, error, stack);

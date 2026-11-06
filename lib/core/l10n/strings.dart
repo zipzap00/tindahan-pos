@@ -350,6 +350,12 @@ abstract class Strings {
   String get utangHistory;
   String get utangSummary;
   String get utangTitle;
+  String get emailConfirmedButton;
+  String get emailNotConfirmedYet;
+  String get resendEmail;
+  String get verificationSent;
+  String get verifyEmailBody;
+  String get verifyEmailTitle;
   String get expenseCategoryHint;
   String get customerRemoved;
   String get customerRestored;

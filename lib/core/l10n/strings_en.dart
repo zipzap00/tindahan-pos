@@ -1025,6 +1025,24 @@ class EnStrings extends Strings {
   String get utangTitle => 'Utang';
 
   @override
+  String get emailConfirmedButton => 'I opened the link';
+
+  @override
+  String get emailNotConfirmedYet => 'Not confirmed yet. Open the link in the email, then try again.';
+
+  @override
+  String get resendEmail => 'Send the email again';
+
+  @override
+  String get verificationSent => 'Sent. It can take a minute to arrive.';
+
+  @override
+  String get verifyEmailBody => 'We sent a confirmation link to this email. Open it, then come back here. If you cannot find it, check your Spam folder.';
+
+  @override
+  String get verifyEmailTitle => 'Confirm your email';
+
+  @override
   String get expenseCategoryHint => 'e.g. Electricity, Rent, Transport';
 
   @override

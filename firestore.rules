@@ -58,7 +58,10 @@ service cloud.firestore {
 
     match /stores/{storeId} {
       allow read: if isMember(storeId);
-      allow create: if signedIn() && request.resource.data.ownerUid == request.auth.uid;
+      // Only a login that proved it owns its email may open a store.
+      allow create: if signedIn()
+        && request.auth.token.email_verified == true
+        && request.resource.data.ownerUid == request.auth.uid;
       allow update: if isOwner(storeId) && request.resource.data.ownerUid == resource.data.ownerUid;
       allow delete: if false;
 

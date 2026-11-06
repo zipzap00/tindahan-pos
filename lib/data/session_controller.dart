@@ -34,6 +34,14 @@ class NeedsStore extends SessionState {
 }
 
 /// The owner turned this account off, or it was removed from the store.
+/// Signed in with an email not yet confirmed, and no store. Google logins
+/// arrive confirmed. Anyone with a store never comes here, so existing owners
+/// and cashiers (whose emails the owner typed in) are not locked out.
+class NeedsEmailVerification extends SessionState {
+  const NeedsEmailVerification(this.user);
+  final User user;
+}
+
 class AccessDisabled extends SessionState {
   const AccessDisabled();
 }
@@ -87,7 +95,8 @@ class SessionController extends ChangeNotifier {
         final storeId = data == null ? '' : readString(data['storeId']);
         if (storeId.isEmpty) {
           _stopMember();
-          _setState(NeedsStore(user));
+          final latest = auth.currentUser ?? user;
+          _setState(latest.emailVerified ? NeedsStore(latest) : NeedsEmailVerification(latest));
           return;
         }
         if (storeId != _storeId) {
@@ -153,6 +162,25 @@ class SessionController extends ChangeNotifier {
   void _cancelServerWait() {
     _serverWaitTimer?.cancel();
     _serverWaitTimer = null;
+  }
+
+  /// Asks Firebase whether the emailed link was opened, and moves on if so.
+  /// Returns `Ok(false)` when it has not been opened yet.
+  Future<Result<bool>> checkEmailVerified() async {
+    const context = '[session/checkEmail]';
+    try {
+      await auth.currentUser?.reload();
+      final user = auth.currentUser;
+      if (user == null || !user.emailVerified) return const Ok(false);
+      // The next writes must carry a token that says the email is confirmed.
+      await user.getIdToken(true);
+      _user = user;
+      _setState(NeedsStore(user));
+      return const Ok(true);
+    } catch (error, stack) {
+      logError(context, error, stack);
+      return Err(mapError(error, context));
+    }
   }
 
   /// Re-reads the user profile, for the retry button on a failed state.

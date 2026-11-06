@@ -1025,6 +1025,24 @@ class FilStrings extends Strings {
   String get utangTitle => 'Utang';
 
   @override
+  String get emailConfirmedButton => 'Nabuksan ko na ang link';
+
+  @override
+  String get emailNotConfirmedYet => 'Hindi pa nakumpirma. Buksan ang link sa email, tapos subukan ulit.';
+
+  @override
+  String get resendEmail => 'Ipadala ulit ang email';
+
+  @override
+  String get verificationSent => 'Naipadala na. Baka umabot ng isang minuto bago dumating.';
+
+  @override
+  String get verifyEmailBody => 'Nagpadala kami ng confirmation link sa email na ito. Buksan ito, tapos bumalik dito. Kung wala, tingnan ang Spam folder.';
+
+  @override
+  String get verifyEmailTitle => 'Kumpirmahin ang email';
+
+  @override
   String get expenseCategoryHint => 'Hal. Kuryente, Upa, Pamasahe';
 
   @override

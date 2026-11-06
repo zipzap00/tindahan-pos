@@ -135,6 +135,107 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 }
 
+/// New email-and-password sign-ups wait here until they open the emailed link.
+class VerifyEmailScreen extends StatefulWidget {
+  const VerifyEmailScreen({super.key, required this.email});
+
+  final String email;
+
+  @override
+  State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
+}
+
+class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
+  bool _checking = false;
+  bool _sending = false;
+  String? _message;
+  NoticeTone _tone = NoticeTone.info;
+
+  void _show(String message, NoticeTone tone) {
+    setState(() {
+      _checking = false;
+      _sending = false;
+      _message = message;
+      _tone = tone;
+    });
+  }
+
+  Future<void> _check() async {
+    final s = context.s;
+    setState(() {
+      _checking = true;
+      _message = null;
+    });
+    final result = await AppServices.of(context).sessionController.checkEmailVerified();
+    if (!mounted) return;
+    result.when<void>(
+      ok: (verified) {
+        if (!verified) _show(s.emailNotConfirmedYet, NoticeTone.warning);
+      },
+      err: (error) => _show(describeError(s, error), NoticeTone.warning),
+    );
+  }
+
+  Future<void> _resend() async {
+    final s = context.s;
+    setState(() {
+      _sending = true;
+      _message = null;
+    });
+    final result = await AppServices.of(context).authRepository.sendVerificationEmail();
+    if (!mounted) return;
+    result.when<void>(
+      ok: (_) => _show(s.verificationSent, NoticeTone.info),
+      err: (error) => _show(describeError(s, error), NoticeTone.warning),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = context.s;
+    final message = _message;
+    return Scaffold(
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: AppSpace.xl),
+          children: [
+            PageHeader(eyebrow: s.stepOneOfTwo, title: s.verifyEmailTitle, caption: widget.email),
+            PagePadding(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(s.verifyEmailBody, style: AppType.body),
+                  const SizedBox(height: AppSpace.lg),
+                  if (message != null) ...[
+                    InlineNotice(message: message, tone: _tone),
+                    const SizedBox(height: AppSpace.lg),
+                  ],
+                  PillButton(label: s.emailConfirmedButton, expand: true, loading: _checking, onPressed: _check),
+                  const SizedBox(height: AppSpace.md),
+                  PillButton(
+                    label: s.resendEmail,
+                    variant: PillVariant.outline,
+                    expand: true,
+                    loading: _sending,
+                    onPressed: _resend,
+                  ),
+                  const SizedBox(height: AppSpace.md),
+                  PillButton(
+                    label: s.signOut,
+                    variant: PillVariant.ghost,
+                    expand: true,
+                    onPressed: AppServices.of(context).sessionController.signOut,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class AccessDisabledScreen extends StatelessWidget {
   const AccessDisabledScreen({super.key});
 
